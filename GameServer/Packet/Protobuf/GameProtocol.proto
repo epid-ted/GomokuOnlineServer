@@ -1,0 +1,42 @@
+syntax = "proto3";
+package Protocol;
+
+import "google/protobuf/timestamp.proto";
+
+option csharp_namespace = "Google.Protobuf.GameProtocol";
+
+enum PacketId {
+	C_ENTER = 0;
+	C_MOVE = 1;
+	S_START = 2;
+	S_MOVE = 3;
+	S_END = 4;
+}
+
+message C_Enter {
+	int32 roomId = 1;
+}
+
+message C_Move {
+	int32 y = 1;
+	int32 x = 2;
+}
+
+message S_Start {
+	int32 turn = 1;
+	google.protobuf.Timestamp time = 2;
+}
+
+message S_Move {
+	int32 y = 1;
+	int32 x = 2;
+	int32 turn = 3;
+	google.protobuf.Timestamp time = 4;
+}
+
+message S_End {
+	int32 y = 1;
+	int32 x = 2;
+	int32 turn = 3;
+	int32 result = 4;
+}

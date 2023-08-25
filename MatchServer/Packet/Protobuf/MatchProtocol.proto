@@ -1,0 +1,20 @@
+syntax = "proto3";
+package Protocol;
+
+option csharp_namespace = "Google.Protobuf.MatchProtocol";
+
+enum PacketId {
+	C_JOIN = 0;
+	C_CANCEL = 1;
+	S_READY = 2;
+}
+
+message C_Join {
+}
+
+message C_Cancel {
+}
+
+message S_Ready {
+	int32 roomId = 1;
+}
