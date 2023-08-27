@@ -1,4 +1,5 @@
-﻿using LoginServer.Data.DTOs.Client;
+﻿using LoginServer.Configuration;
+using LoginServer.Data.DTOs.Client;
 using LoginServer.Data.Models;
 using LoginServer.Exceptions;
 using LoginServer.Services;
@@ -35,7 +36,9 @@ namespace LoginServer.Controllers
             LoginResponseDto loginResponseDto = new LoginResponseDto()
             {
                 UserId = userModel.UserId,
-                SessionId = sessionModel.SessionId
+                SessionId = sessionModel.SessionId,
+                MatchServerAddress = ServerConfig.MatchServerPrivateAddress,
+                GameServerAddress = ServerConfig.GameServerPrivateAddress
             };
 
             return Ok(loginResponseDto);
