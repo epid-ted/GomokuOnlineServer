@@ -71,7 +71,7 @@ namespace MatchServer.WaitingQueue
                     Participants = participants
                 };
 
-                httpClient.BaseAddress = new Uri(ServerConfig.GameServer);
+                httpClient.BaseAddress = new Uri(ServerConfig.GameServerPrivateAddress);
                 HttpResponseMessage response = await httpClient.PostAsJsonAsync("room/create", createRoomRequestDto);
 
                 string responseBody = await response.Content.ReadAsStringAsync();

@@ -39,9 +39,12 @@ namespace LoginServer
             builder.Services.AddScoped<AccountService>();
             builder.Services.AddScoped<SessionService>();
 
-            ServerConfig.LoginServer = builder.Configuration.GetValue<string>("ServerInfo:LoginServer");
-            ServerConfig.MatchServer = builder.Configuration.GetValue<string>("ServerInfo:MatchServer");
-            ServerConfig.GameServer = builder.Configuration.GetValue<string>("ServerInfo:GameServer");
+            ServerConfig.LoginServerPrivateAddress = builder.Configuration.GetValue<string>("ServerInfo:LoginServerPrivateAddress");
+            ServerConfig.MatchServerPrivateAddress = builder.Configuration.GetValue<string>("ServerInfo:MatchServerPrivateAddress");
+            ServerConfig.GameServerPrivateAddress = builder.Configuration.GetValue<string>("ServerInfo:GameServerPrivateAddress");
+            ServerConfig.LoginServerPublicAddress = builder.Configuration.GetValue<string>("ServerInfo:LoginServerPublicAddress");
+            ServerConfig.MatchServerPublicAddress = builder.Configuration.GetValue<string>("ServerInfo:MatchServerPublicAddress");
+            ServerConfig.GameServerPublicAddress = builder.Configuration.GetValue<string>("ServerInfo:GameServerPublicAddress");
             // ============================ Added ============================
 
             var app = builder.Build();
