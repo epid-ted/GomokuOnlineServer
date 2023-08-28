@@ -13,8 +13,7 @@ namespace Server.Packet
             C_Join cJoinPacket = packet as C_Join;
             ClientSession clientSession = session as ClientSession;
 
-            // temp
-            Console.WriteLine($"UserId: {clientSession.SessionId} Added to queue!");
+            //Console.WriteLine($"UserId: {clientSession.SessionId} Added to queue!");
 
             UserQueue.Instance.Add(clientSession);
         }
@@ -24,8 +23,7 @@ namespace Server.Packet
             C_Cancel cCancelPacket = packet as C_Cancel;
             ClientSession clientSession = session as ClientSession;
 
-            // temp
-            Console.WriteLine($"UserId: {clientSession.SessionId} Removed from queue!");
+            //Console.WriteLine($"UserId: {clientSession.SessionId} Removed from queue!");
 
             UserQueue.Instance.Remove(clientSession.SessionId);
         }
