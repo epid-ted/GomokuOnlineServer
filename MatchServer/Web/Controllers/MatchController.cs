@@ -1,3 +1,4 @@
+using MatchServer.Web.Data.DTOs.Client;
 using MatchServer.Web.Data.DTOs.GameServer;
 using MatchServer.Web.Data.Models;
 using MatchServer.Web.Services;
@@ -16,6 +17,22 @@ namespace MatchServer.Web.Controllers
         {
             this.matchService = matchService;
             this.accountService = accountService;
+        }
+
+        [HttpGet("stamina/{userId}")]
+        public async Task<IActionResult> GetStamina(int userId)
+        {
+            StaminaModel staminaModel = await accountService.GetStamina(userId);
+            if (staminaModel.Stamina == -1)
+            {
+                return BadRequest();
+            }
+            GetStaminaResponseDto getStaminaResponseDto = new GetStaminaResponseDto()
+            {
+                LastStaminaUpdateTime = staminaModel.LastStaminaUpdateTime,
+                Stamina = staminaModel.Stamina
+            };
+            return Ok(getStaminaResponseDto);
         }
 
         [HttpPost("result/save")]

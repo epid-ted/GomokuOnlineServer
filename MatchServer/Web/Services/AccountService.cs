@@ -1,4 +1,5 @@
-﻿using MatchServer.Web.Repository;
+﻿using MatchServer.Web.Data.Models;
+using MatchServer.Web.Repository;
 
 namespace MatchServer.Web.Services
 {
@@ -9,6 +10,11 @@ namespace MatchServer.Web.Services
         public AccountService(IAccountRepository accountRepository)
         {
             this.accountRepository = accountRepository;
+        }
+
+        public async Task<StaminaModel> GetStamina(int userId)
+        {
+            return await accountRepository.Get(userId);
         }
 
         public async Task UpdateStamina(int userId)
