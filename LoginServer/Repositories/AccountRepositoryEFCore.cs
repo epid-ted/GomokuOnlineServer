@@ -20,7 +20,9 @@ namespace LoginServer.Repositories
             var user = new User()
             {
                 Username = username,
-                EncodedPassword = encodedPassword
+                EncodedPassword = encodedPassword,
+                LastStaminaUpdateTime = DateTime.UtcNow,
+                Stamina = 120
             };
 
             try
