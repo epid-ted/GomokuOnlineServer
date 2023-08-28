@@ -44,6 +44,9 @@ namespace MatchServer
             );
             builder.Services.AddScoped<IMatchRepository, MatchRepositoryEFCore>();
 
+            // feat
+            ServerConfig.AccountConnectionString = builder.Configuration.GetConnectionString("AccountConnectionString");
+
             RedisConfig.Redis = ConnectionMultiplexer.Connect(
                 builder.Configuration.GetConnectionString("SessionConnectionString")
             );

@@ -1,6 +1,8 @@
 ﻿using Google.Protobuf;
 using Google.Protobuf.MatchProtocol;
 using MatchServer.Configuration;
+using MatchServer.Web.Data;
+using Microsoft.EntityFrameworkCore;
 using NetworkLibrary;
 using Server.Packet;
 using StackExchange.Redis;
@@ -12,8 +14,19 @@ namespace Server.Session
 {
     public class ClientSession : PacketSession
     {
-        public override void OnConnected(EndPoint endPoint)
+        public DateTime LastStaminaUpdateTime { get; set; }
+        public int Stamina { get; set; }
+
+        public override async Task OnConnected(EndPoint endPoint)
         {
+            SessionId = await Authorize();
+            if (SessionId <= 0)
+            {
+                Disconnect();
+                return;
+            }
+            await GetStamina(SessionId);
+            ReceiveLoop();
             Console.WriteLine($"Client {endPoint} is connected.");
         }
 
@@ -74,6 +87,31 @@ namespace Server.Session
 
             // Session Manager
             return SessionManager.Instance.Add(userId, this) ? userId : -1;
+        }
+
+        public async Task<int> GetStamina(int userId)
+        {
+            var optionsBuilder = new DbContextOptionsBuilder<AppDbContext>();
+            optionsBuilder.UseMySQL(ServerConfig.AccountConnectionString);
+
+            using (var dbContext = new AppDbContext(optionsBuilder.Options))
+            {
+                var staminaInfo = await dbContext.Users.AsNoTracking()
+                    .Where(u => u.UserId == userId)
+                    .Select(u => new
+                    {
+                        LastStaminaUpdateTime = u.LastStaminaUpdateTime,
+                        Stamina = u.Stamina
+                    })
+                    .FirstOrDefaultAsync();
+
+                int seconds = (int)(DateTime.UtcNow - staminaInfo.LastStaminaUpdateTime).TotalSeconds;
+                int currentStamina = Math.Min(120, staminaInfo.Stamina + (seconds / 360));
+
+                LastStaminaUpdateTime = staminaInfo.LastStaminaUpdateTime;
+                Stamina = staminaInfo.Stamina;
+                return currentStamina;
+            }
         }
 
         public void Send(IMessage packet)

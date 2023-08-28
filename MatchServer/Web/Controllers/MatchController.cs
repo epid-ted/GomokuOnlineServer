@@ -1,6 +1,6 @@
 using MatchServer.Web.Data.DTOs.GameServer;
 using MatchServer.Web.Data.Models;
-using MatchServer.Web.Repository;
+using MatchServer.Web.Services;
 using Microsoft.AspNetCore.Mvc;
 
 namespace MatchServer.Web.Controllers
@@ -9,11 +9,13 @@ namespace MatchServer.Web.Controllers
     [Route("match")]
     public class MatchController : ControllerBase
     {
-        private readonly IMatchRepository matchRepository;
+        private readonly MatchService matchService;
+        private readonly AccountService accountService;
 
-        public MatchController(IMatchRepository matchRepository)
+        public MatchController(MatchService matchService, AccountService accountService)
         {
-            this.matchRepository = matchRepository;
+            this.matchService = matchService;
+            this.accountService = accountService;
         }
 
         [HttpPost("result/save")]
@@ -26,7 +28,11 @@ namespace MatchServer.Web.Controllers
                 Result = saveMatchResultDto.Result,
                 Participants = saveMatchResultDto.Participants
             };
-            await matchRepository.Add(matchResultModel);
+            await matchService.SaveMatchResult(matchResultModel);
+            for (int i = 0; i < matchResultModel.Participants.Length; i++)
+            {
+                await accountService.UpdateStamina(saveMatchResultDto.Participants[i]);
+            }
             return Ok();
         }
     }

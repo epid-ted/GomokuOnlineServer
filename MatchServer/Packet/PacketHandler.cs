@@ -16,7 +16,7 @@ namespace Server.Packet
             // temp
             Console.WriteLine($"UserId: {clientSession.SessionId} Added to queue!");
 
-            UserQueue.Instance.Add(clientSession.SessionId, clientSession);
+            UserQueue.Instance.Add(clientSession);
         }
 
         public static void C_CancelHandler(PacketSession session, IMessage packet)
