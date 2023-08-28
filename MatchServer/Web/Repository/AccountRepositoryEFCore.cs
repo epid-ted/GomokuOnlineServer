@@ -38,7 +38,7 @@ namespace MatchServer.Web.Repository
             };
         }
 
-        public async Task Update(int userId)
+        public async Task Add(int userId, int value)
         {
             User? user = await dbContext.Users
                 .Where(u => u.UserId == userId)
@@ -50,7 +50,7 @@ namespace MatchServer.Web.Repository
             }
 
             int seconds = (int)(DateTime.UtcNow - user.LastStaminaUpdateTime).TotalSeconds;
-            int currentStamina = Math.Min(120, user.Stamina + (seconds / 360) - 10);
+            int currentStamina = Math.Min(120, user.Stamina + (seconds / 360) + value);
 
             user.LastStaminaUpdateTime = DateTime.UtcNow;
             user.Stamina = currentStamina;

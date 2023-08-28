@@ -2,6 +2,7 @@
 using Google.Protobuf.MatchProtocol;
 using MatchServer.Configuration;
 using MatchServer.Web.Data;
+using MatchServer.Web.Data.Entities;
 using Microsoft.EntityFrameworkCore;
 using NetworkLibrary;
 using Server.Packet;
@@ -105,9 +106,41 @@ namespace Server.Session
                     })
                     .FirstOrDefaultAsync();
 
+                // TODO: NULL check
+
                 DateTime dateTimeUtcNow = DateTime.UtcNow;
                 int seconds = (int)(dateTimeUtcNow - staminaInfo.LastStaminaUpdateTime).TotalSeconds;
                 int currentStamina = Math.Min(120, staminaInfo.Stamina + (seconds / 360));
+
+                LastStaminaUpdateTime = dateTimeUtcNow;
+                Stamina = currentStamina;
+                return currentStamina;
+            }
+        }
+
+        public async Task<int> ConsumeStamina(int value)
+        {
+            int userId = SessionId;
+
+            var optionsBuilder = new DbContextOptionsBuilder<AppDbContext>();
+            optionsBuilder.UseMySQL(ServerConfig.AccountConnectionString);
+
+            using (var dbContext = new AppDbContext(optionsBuilder.Options))
+            {
+                User? user = await dbContext.Users
+                    .Where(u => u.UserId == userId)
+                    .FirstOrDefaultAsync();
+
+                // TODO: NULL check
+
+                DateTime dateTimeUtcNow = DateTime.UtcNow;
+                int seconds = (int)(dateTimeUtcNow - user.LastStaminaUpdateTime).TotalSeconds;
+                int currentStamina = Math.Min(120, user.Stamina + (seconds / 360) - value);
+
+                user.LastStaminaUpdateTime = dateTimeUtcNow;
+                user.Stamina = currentStamina;
+
+                await dbContext.SaveChangesAsync();
 
                 LastStaminaUpdateTime = dateTimeUtcNow;
                 Stamina = currentStamina;

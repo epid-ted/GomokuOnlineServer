@@ -46,9 +46,14 @@ namespace MatchServer.Web.Controllers
                 Participants = saveMatchResultDto.Participants
             };
             await matchService.SaveMatchResult(matchResultModel);
-            for (int i = 0; i < matchResultModel.Participants.Length; i++)
+
+            // Restore stamina when error happend in game
+            if (matchResultModel.Result == -1)
             {
-                await accountService.UpdateStamina(saveMatchResultDto.Participants[i]);
+                for (int i = 0; i < matchResultModel.Participants.Length; i++)
+                {
+                    await accountService.AddStamina(saveMatchResultDto.Participants[i], 10);
+                }
             }
             return Ok();
         }

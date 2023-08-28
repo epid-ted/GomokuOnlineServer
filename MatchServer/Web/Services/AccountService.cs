@@ -17,9 +17,9 @@ namespace MatchServer.Web.Services
             return await accountRepository.Get(userId);
         }
 
-        public async Task UpdateStamina(int userId)
+        public async Task AddStamina(int userId, int value)
         {
-            await accountRepository.Update(userId);
+            await accountRepository.Add(userId, value);
         }
     }
 }

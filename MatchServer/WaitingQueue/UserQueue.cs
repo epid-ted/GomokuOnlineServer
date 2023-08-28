@@ -61,6 +61,9 @@ namespace MatchServer.WaitingQueue
             };
             session.Send(packet);
 
+            // Decrease Stamina
+            await session.ConsumeStamina(10);
+
             // For random turn
             if (rnd.Next(0, 2) == 1)
             {

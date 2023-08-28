@@ -5,6 +5,6 @@ namespace MatchServer.Web.Repository
     public interface IAccountRepository
     {
         public Task<StaminaModel> Get(int userId);
-        public Task Update(int userId);
+        public Task Add(int userId, int value);
     }
 }
