@@ -18,27 +18,27 @@ namespace NetworkLibrary
         public int SessionId { get; set; }
 
         public abstract Task<int> Authorize();
-        public abstract void OnConnected(EndPoint endPoint);
+        public abstract Task OnConnected(EndPoint endPoint);
         public abstract int OnReceived(ArraySegment<byte> buffer);
         public abstract void OnSent(int bytesTransferred);
         public abstract void OnDisconnected(EndPoint endPoint);
 
-        public async Task Start(Socket socket)
+        public void Start(Socket socket)
         {
             this.socket = socket;
-            SessionId = await Authorize();
-            if (SessionId > 0)
-            {
-                OnConnected(socket.RemoteEndPoint);
-                ReceiveLoop();
-            }
-            else
-            {
-                Disconnect();
-            }
+            OnConnected(socket.RemoteEndPoint);
+            //SessionId = await Authorize();
+            //if (SessionId > 0)
+            //{
+            //    ReceiveLoop();
+            //}
+            //else
+            //{
+            //    Disconnect();
+            //}
         }
 
-        async Task ReceiveLoop()
+        public async Task ReceiveLoop()
         {
             while (true)
             {

@@ -6,13 +6,18 @@ option csharp_namespace = "Google.Protobuf.MatchProtocol";
 enum PacketId {
 	C_JOIN = 0;
 	C_CANCEL = 1;
-	S_READY = 2;
+	S_RESPONSE = 2;
+	S_READY = 3;
 }
 
 message C_Join {
 }
 
 message C_Cancel {
+}
+
+message S_Response {
+	bool successed = 1;
 }
 
 message S_Ready {

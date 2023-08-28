@@ -8,5 +8,6 @@
         public static string LoginServerPublicAddress { get; set; }
         public static string MatchServerPublicAddress { get; set; }
         public static string GameServerPublicAddress { get; set; }
+        public static string AccountConnectionString { get; set; }
     }
 }

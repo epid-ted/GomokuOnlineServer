@@ -37,8 +37,8 @@ namespace LoginServer.Controllers
             {
                 UserId = userModel.UserId,
                 SessionId = sessionModel.SessionId,
-                MatchServerAddress = ServerConfig.MatchServerPrivateAddress,
-                GameServerAddress = ServerConfig.GameServerPrivateAddress
+                MatchServerAddress = ServerConfig.MatchServerPublicAddress,
+                GameServerAddress = ServerConfig.GameServerPublicAddress
             };
 
             return Ok(loginResponseDto);

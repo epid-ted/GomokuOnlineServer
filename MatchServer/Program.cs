@@ -1,6 +1,7 @@
 using MatchServer.Configuration;
 using MatchServer.Web.Data;
 using MatchServer.Web.Repository;
+using MatchServer.Web.Services;
 using Microsoft.EntityFrameworkCore;
 using NetworkLibrary;
 using Server.Session;
@@ -42,7 +43,13 @@ namespace MatchServer
             builder.Services.AddDbContext<AppDbContext>(options =>
                 options.UseMySQL(builder.Configuration.GetConnectionString("AccountConnectionString"))
             );
+            builder.Services.AddScoped<IAccountRepository, AccountRepositoryEFCore>();
             builder.Services.AddScoped<IMatchRepository, MatchRepositoryEFCore>();
+            builder.Services.AddScoped<AccountService>();
+            builder.Services.AddScoped<MatchService>();
+
+            // feat
+            ServerConfig.AccountConnectionString = builder.Configuration.GetConnectionString("AccountConnectionString");
 
             RedisConfig.Redis = ConnectionMultiplexer.Connect(
                 builder.Configuration.GetConnectionString("SessionConnectionString")
