@@ -1,9 +1,6 @@
 ﻿using Google.Protobuf;
 using Google.Protobuf.MatchProtocol;
 using MatchServer.Configuration;
-using MatchServer.Web.Data;
-using MatchServer.Web.Data.Entities;
-using Microsoft.EntityFrameworkCore;
 using NetworkLibrary;
 using Server.Packet;
 using StackExchange.Redis;
@@ -15,9 +12,6 @@ namespace Server.Session
 {
     public class ClientSession : PacketSession
     {
-        public DateTime LastStaminaUpdateTime { get; set; }
-        public int Stamina { get; set; }
-
         public override async Task OnConnected(EndPoint endPoint)
         {
             SessionId = await Authorize();
@@ -26,7 +20,6 @@ namespace Server.Session
                 Disconnect();
                 return;
             }
-            await GetStamina(SessionId);
             ReceiveLoop();
             Console.WriteLine($"Client {endPoint} is connected.");
         }
@@ -88,64 +81,6 @@ namespace Server.Session
 
             // Session Manager
             return SessionManager.Instance.Add(userId, this) ? userId : -1;
-        }
-
-        public async Task<int> GetStamina(int userId)
-        {
-            var optionsBuilder = new DbContextOptionsBuilder<AppDbContext>();
-            optionsBuilder.UseMySQL(ServerConfig.AccountConnectionString);
-
-            using (var dbContext = new AppDbContext(optionsBuilder.Options))
-            {
-                var staminaInfo = await dbContext.Users.AsNoTracking()
-                    .Where(u => u.UserId == userId)
-                    .Select(u => new
-                    {
-                        LastStaminaUpdateTime = u.LastStaminaUpdateTime,
-                        Stamina = u.Stamina
-                    })
-                    .FirstOrDefaultAsync();
-
-                // TODO: NULL check
-
-                DateTime dateTimeUtcNow = DateTime.UtcNow;
-                int seconds = (int)(dateTimeUtcNow - staminaInfo.LastStaminaUpdateTime).TotalSeconds;
-                int currentStamina = Math.Min(120, staminaInfo.Stamina + (seconds / 360));
-
-                LastStaminaUpdateTime = dateTimeUtcNow;
-                Stamina = currentStamina;
-                return currentStamina;
-            }
-        }
-
-        public async Task<int> ConsumeStamina(int value)
-        {
-            int userId = SessionId;
-
-            var optionsBuilder = new DbContextOptionsBuilder<AppDbContext>();
-            optionsBuilder.UseMySQL(ServerConfig.AccountConnectionString);
-
-            using (var dbContext = new AppDbContext(optionsBuilder.Options))
-            {
-                User? user = await dbContext.Users
-                    .Where(u => u.UserId == userId)
-                    .FirstOrDefaultAsync();
-
-                // TODO: NULL check
-
-                DateTime dateTimeUtcNow = DateTime.UtcNow;
-                int seconds = (int)(dateTimeUtcNow - user.LastStaminaUpdateTime).TotalSeconds;
-                int currentStamina = Math.Min(120, user.Stamina + (seconds / 360) - value);
-
-                user.LastStaminaUpdateTime = dateTimeUtcNow;
-                user.Stamina = currentStamina;
-
-                await dbContext.SaveChangesAsync();
-
-                LastStaminaUpdateTime = dateTimeUtcNow;
-                Stamina = currentStamina;
-                return currentStamina;
-            }
         }
 
         public void Send(IMessage packet)
