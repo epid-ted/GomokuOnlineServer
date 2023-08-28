@@ -105,11 +105,12 @@ namespace Server.Session
                     })
                     .FirstOrDefaultAsync();
 
-                int seconds = (int)(DateTime.UtcNow - staminaInfo.LastStaminaUpdateTime).TotalSeconds;
+                DateTime dateTimeUtcNow = DateTime.UtcNow;
+                int seconds = (int)(dateTimeUtcNow - staminaInfo.LastStaminaUpdateTime).TotalSeconds;
                 int currentStamina = Math.Min(120, staminaInfo.Stamina + (seconds / 360));
 
-                LastStaminaUpdateTime = staminaInfo.LastStaminaUpdateTime;
-                Stamina = staminaInfo.Stamina;
+                LastStaminaUpdateTime = dateTimeUtcNow;
+                Stamina = currentStamina;
                 return currentStamina;
             }
         }
