@@ -29,12 +29,10 @@ namespace MatchServer.Web.Repository
                 };
             }
 
-            int seconds = (int)(DateTime.UtcNow - user.LastStaminaUpdateTime).TotalSeconds;
-            int currentStamina = Math.Min(120, user.Stamina + (seconds / 360));
             return new StaminaModel()
             {
-                LastStaminaUpdateTime = DateTime.UtcNow,
-                Stamina = currentStamina
+                LastStaminaUpdateTime = user.LastStaminaUpdateTime,
+                Stamina = user.Stamina
             };
         }
 
