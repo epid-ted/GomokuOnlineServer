@@ -258,7 +258,7 @@ namespace GameServer.Room
 
             using (HttpClient httpClient = new HttpClient())
             {
-                httpClient.BaseAddress = new Uri(ServerConfig.MatchServerPrivateAddress);
+                httpClient.BaseAddress = new Uri(ServerConfig.MatchServer);
                 await httpClient.PostAsJsonAsync("match/result/save", saveMatchResultRequestDto);
             }
         }

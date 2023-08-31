@@ -80,13 +80,13 @@ namespace LoginServer.Services
 
             using (HttpClient httpClient = new HttpClient())
             {
-                httpClient.BaseAddress = new Uri(ServerConfig.MatchServerPrivateAddress);
+                httpClient.BaseAddress = new Uri(ServerConfig.MatchServer);
                 await httpClient.PostAsJsonAsync("session/kickout", kickoutRequestDto);
             }
 
             using (HttpClient httpClient = new HttpClient())
             {
-                httpClient.BaseAddress = new Uri(ServerConfig.GameServerPrivateAddress);
+                httpClient.BaseAddress = new Uri(ServerConfig.GameServer);
                 await httpClient.PostAsJsonAsync("session/kickout", kickoutRequestDto);
             }
         }
