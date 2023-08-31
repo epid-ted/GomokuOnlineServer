@@ -11,9 +11,9 @@ namespace MatchServer.Web.Controllers
     public class MatchController : ControllerBase
     {
         private readonly MatchService matchService;
-        private readonly AccountService accountService;
+        private readonly StaminaService accountService;
 
-        public MatchController(MatchService matchService, AccountService accountService)
+        public MatchController(MatchService matchService, StaminaService accountService)
         {
             this.matchService = matchService;
             this.accountService = accountService;

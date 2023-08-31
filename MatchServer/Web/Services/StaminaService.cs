@@ -3,11 +3,11 @@ using MatchServer.Web.Repository;
 
 namespace MatchServer.Web.Services
 {
-    public class AccountService
+    public class StaminaService
     {
         private readonly IStaminaRepository accountRepository;
 
-        public AccountService(IStaminaRepository accountRepository)
+        public StaminaService(IStaminaRepository accountRepository)
         {
             this.accountRepository = accountRepository;
         }

@@ -43,10 +43,12 @@ namespace MatchServer
             builder.Services.AddDbContext<AppDbContext>(options =>
                 options.UseMySQL(builder.Configuration.GetConnectionString("AccountConnectionString"))
             );
-            builder.Services.AddScoped<IStaminaRepository, StaminaRepositoryEFCore>();
             builder.Services.AddScoped<IMatchRepository, MatchRepositoryEFCore>();
-            builder.Services.AddScoped<AccountService>();
+            builder.Services.AddScoped<IRankingRepository, RankingRepositoryRedis>();
+            builder.Services.AddScoped<IStaminaRepository, StaminaRepositoryEFCore>();
             builder.Services.AddScoped<MatchService>();
+            builder.Services.AddScoped<RankingService>();
+            builder.Services.AddScoped<StaminaService>();
 
             // feat
             ServerConfig.AccountConnectionString = builder.Configuration.GetConnectionString("AccountConnectionString");
