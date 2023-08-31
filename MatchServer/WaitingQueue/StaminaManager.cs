@@ -54,8 +54,11 @@ namespace MatchServer.WaitingQueue
                 int currentStamina = Math.Min(120, user.Stamina + (seconds / 360)) - value;
 
                 // Calculate the last moment when stamina value changed
-                int mod = seconds % 360;
-                dateTime = dateTime.AddSeconds(-mod);
+                if (currentStamina < 120)
+                {
+                    int mod = seconds % 360;
+                    dateTime = dateTime.AddSeconds(-mod);
+                }
 
                 user.LastStaminaUpdateTime = dateTime;
                 user.Stamina = currentStamina;
