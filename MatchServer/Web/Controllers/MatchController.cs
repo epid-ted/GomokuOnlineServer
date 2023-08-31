@@ -47,7 +47,7 @@ namespace MatchServer.Web.Controllers
             };
             await matchService.SaveMatchResult(matchResultModel);
 
-            // Restore stamina when error happend in game
+            // Restore stamina when the game is invalid
             if (matchResultModel.Result == -1)
             {
                 for (int i = 0; i < matchResultModel.Participants.Length; i++)

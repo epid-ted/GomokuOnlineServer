@@ -43,7 +43,7 @@ namespace MatchServer
             builder.Services.AddDbContext<AppDbContext>(options =>
                 options.UseMySQL(builder.Configuration.GetConnectionString("AccountConnectionString"))
             );
-            builder.Services.AddScoped<IAccountRepository, AccountRepositoryEFCore>();
+            builder.Services.AddScoped<IStaminaRepository, StaminaRepositoryEFCore>();
             builder.Services.AddScoped<IMatchRepository, MatchRepositoryEFCore>();
             builder.Services.AddScoped<AccountService>();
             builder.Services.AddScoped<MatchService>();

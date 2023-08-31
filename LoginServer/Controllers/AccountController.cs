@@ -31,7 +31,7 @@ namespace LoginServer.Controllers
                 return Unauthorized();
             }
 
-            SessionModel sessionModel = await sessionService.EnterGame(userModel.UserId);
+            SessionModel sessionModel = await sessionService.EnterGame(userModel.UserId, loginRequestDto.Username);
 
             LoginResponseDto loginResponseDto = new LoginResponseDto()
             {

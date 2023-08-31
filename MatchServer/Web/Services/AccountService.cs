@@ -5,9 +5,9 @@ namespace MatchServer.Web.Services
 {
     public class AccountService
     {
-        private readonly IAccountRepository accountRepository;
+        private readonly IStaminaRepository accountRepository;
 
-        public AccountService(IAccountRepository accountRepository)
+        public AccountService(IStaminaRepository accountRepository)
         {
             this.accountRepository = accountRepository;
         }
@@ -19,7 +19,7 @@ namespace MatchServer.Web.Services
 
         public async Task AddStamina(int userId, int value)
         {
-            await accountRepository.Add(userId, value);
+            await accountRepository.AddStamina(userId, value);
         }
     }
 }
