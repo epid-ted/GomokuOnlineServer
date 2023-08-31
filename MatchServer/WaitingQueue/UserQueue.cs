@@ -19,14 +19,32 @@ namespace MatchServer.WaitingQueue
 
         private UserQueue() { }
 
-        public void Add(int userId, ClientSession session)
+        public async Task Add(ClientSession session)
         {
+            // Check if the user has enough stamina
+            if (!await HasEnoughStamina(session))
+            {
+                S_Response sResponsePacket = new S_Response()
+                {
+                    Successed = false
+                };
+                session.Send(sResponsePacket);
+                return;
+            }
+
             int[] participants = new int[2];
 
             lock (_lock)
             {
-                waitingUsers.Add(userId, session);
+                int userId = session.SessionId;
 
+                // Check if the user already added to queue
+                if (waitingUsers.ContainsKey(userId))
+                {
+                    return;
+                }
+
+                waitingUsers.Add(userId, session);
                 if (waitingUsers.Count == 2)
                 {
                     for (int i = 0; i < participants.Length; i++)
@@ -35,6 +53,16 @@ namespace MatchServer.WaitingQueue
                     }
                 }
             }
+
+            // Send packet
+            S_Response packet = new S_Response()
+            {
+                Successed = true
+            };
+            session.Send(packet);
+
+            // Decrease Stamina
+            await StaminaManager.ConsumeStamina(session.SessionId, 10);
 
             // For random turn
             if (rnd.Next(0, 2) == 1)
@@ -71,7 +99,7 @@ namespace MatchServer.WaitingQueue
                     Participants = participants
                 };
 
-                httpClient.BaseAddress = new Uri(ServerConfig.GameServer);
+                httpClient.BaseAddress = new Uri(ServerConfig.GameServerPrivateAddress);
                 HttpResponseMessage response = await httpClient.PostAsJsonAsync("room/create", createRoomRequestDto);
 
                 string responseBody = await response.Content.ReadAsStringAsync();
@@ -98,6 +126,11 @@ namespace MatchServer.WaitingQueue
                     clientSession.Send(packet);
                 }
             }
+        }
+
+        private async Task<bool> HasEnoughStamina(ClientSession session)
+        {
+            return await StaminaManager.GetStamina(session.SessionId) >= 10;
         }
     }
 }
