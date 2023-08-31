@@ -19,32 +19,14 @@ namespace MatchServer.WaitingQueue
 
         private UserQueue() { }
 
-        public async Task Add(ClientSession session)
+        public void Add(int userId, ClientSession session)
         {
-            // Check if the user has enough stamina
-            if (!await HasEnoughStamina(session))
-            {
-                S_Response sResponsePacket = new S_Response()
-                {
-                    Successed = false
-                };
-                session.Send(sResponsePacket);
-                return;
-            }
-
             int[] participants = new int[2];
 
             lock (_lock)
             {
-                int userId = session.SessionId;
-
-                // Check if the user already added to queue
-                if (waitingUsers.ContainsKey(userId))
-                {
-                    return;
-                }
-
                 waitingUsers.Add(userId, session);
+
                 if (waitingUsers.Count == 2)
                 {
                     for (int i = 0; i < participants.Length; i++)
@@ -53,16 +35,6 @@ namespace MatchServer.WaitingQueue
                     }
                 }
             }
-
-            // Send packet
-            S_Response packet = new S_Response()
-            {
-                Successed = true
-            };
-            session.Send(packet);
-
-            // Decrease Stamina
-            await StaminaManager.ConsumeStamina(session.SessionId, 10);
 
             // For random turn
             if (rnd.Next(0, 2) == 1)
@@ -126,11 +98,6 @@ namespace MatchServer.WaitingQueue
                     clientSession.Send(packet);
                 }
             }
-        }
-
-        private async Task<bool> HasEnoughStamina(ClientSession session)
-        {
-            return await StaminaManager.GetStamina(session.SessionId) >= 10;
         }
     }
 }

@@ -1,7 +1,6 @@
-using MatchServer.Web.Data.DTOs.Client;
 using MatchServer.Web.Data.DTOs.GameServer;
 using MatchServer.Web.Data.Models;
-using MatchServer.Web.Services;
+using MatchServer.Web.Repository;
 using Microsoft.AspNetCore.Mvc;
 
 namespace MatchServer.Web.Controllers
@@ -10,29 +9,11 @@ namespace MatchServer.Web.Controllers
     [Route("match")]
     public class MatchController : ControllerBase
     {
-        private readonly MatchService matchService;
-        private readonly AccountService accountService;
+        private readonly IMatchRepository matchRepository;
 
-        public MatchController(MatchService matchService, AccountService accountService)
+        public MatchController(IMatchRepository matchRepository)
         {
-            this.matchService = matchService;
-            this.accountService = accountService;
-        }
-
-        [HttpGet("stamina/{userId}")]
-        public async Task<IActionResult> GetStamina(int userId)
-        {
-            StaminaModel staminaModel = await accountService.GetStamina(userId);
-            if (staminaModel.Stamina == -1)
-            {
-                return BadRequest();
-            }
-            GetStaminaResponseDto getStaminaResponseDto = new GetStaminaResponseDto()
-            {
-                LastStaminaUpdateTime = staminaModel.LastStaminaUpdateTime,
-                Stamina = staminaModel.Stamina
-            };
-            return Ok(getStaminaResponseDto);
+            this.matchRepository = matchRepository;
         }
 
         [HttpPost("result/save")]
@@ -45,16 +26,7 @@ namespace MatchServer.Web.Controllers
                 Result = saveMatchResultDto.Result,
                 Participants = saveMatchResultDto.Participants
             };
-            await matchService.SaveMatchResult(matchResultModel);
-
-            // Restore stamina when error happend in game
-            if (matchResultModel.Result == -1)
-            {
-                for (int i = 0; i < matchResultModel.Participants.Length; i++)
-                {
-                    await accountService.AddStamina(saveMatchResultDto.Participants[i], 10);
-                }
-            }
+            await matchRepository.Add(matchResultModel);
             return Ok();
         }
     }

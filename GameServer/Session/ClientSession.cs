@@ -15,15 +15,8 @@ namespace Server.Session
     {
         public GameRoom? Room { get; set; }
 
-        public override async Task OnConnected(EndPoint endPoint)
+        public override void OnConnected(EndPoint endPoint)
         {
-            SessionId = await Authorize();
-            if (SessionId <= 0)
-            {
-                Disconnect();
-                return;
-            }
-            ReceiveLoop();
             Console.WriteLine($"Client {endPoint} is connected.");
         }
 
