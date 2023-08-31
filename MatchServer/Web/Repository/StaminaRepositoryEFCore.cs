@@ -6,11 +6,11 @@ using System.Data;
 
 namespace MatchServer.Web.Repository
 {
-    public class AccountRepositoryEFCore : IAccountRepository
+    public class StaminaRepositoryEFCore : IStaminaRepository
     {
         private readonly AppDbContext dbContext;
 
-        public AccountRepositoryEFCore(AppDbContext dbContext)
+        public StaminaRepositoryEFCore(AppDbContext dbContext)
         {
             this.dbContext = dbContext;
         }
@@ -36,7 +36,7 @@ namespace MatchServer.Web.Repository
             };
         }
 
-        public async Task Add(int userId, int value)
+        public async Task AddStamina(int userId, int value)
         {
             User? user = await dbContext.Users
                 .Where(u => u.UserId == userId)

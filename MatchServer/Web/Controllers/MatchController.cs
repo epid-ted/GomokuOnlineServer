@@ -11,9 +11,9 @@ namespace MatchServer.Web.Controllers
     public class MatchController : ControllerBase
     {
         private readonly MatchService matchService;
-        private readonly AccountService accountService;
+        private readonly StaminaService accountService;
 
-        public MatchController(MatchService matchService, AccountService accountService)
+        public MatchController(MatchService matchService, StaminaService accountService)
         {
             this.matchService = matchService;
             this.accountService = accountService;
@@ -47,7 +47,7 @@ namespace MatchServer.Web.Controllers
             };
             await matchService.SaveMatchResult(matchResultModel);
 
-            // Restore stamina when error happend in game
+            // Restore stamina when the game is invalid
             if (matchResultModel.Result == -1)
             {
                 for (int i = 0; i < matchResultModel.Participants.Length; i++)

@@ -1,5 +1,4 @@
 ﻿using LoginServer.Configuration;
-using LoginServer.Data.DTOs.GameServer;
 using LoginServer.Data.Models;
 using LoginServer.Repositories;
 
@@ -15,7 +14,7 @@ namespace LoginServer.Services
             this.sessionRepository = sessionRepository;
         }
 
-        public async Task<SessionModel> EnterGame(int userId)
+        public async Task<SessionModel> EnterGame(int userId, string username)
         {
             string sessionId = GenerateSessionId();
 
@@ -25,15 +24,14 @@ namespace LoginServer.Services
                 string? prevSessionId = await sessionRepository.Find(userId);
                 if (prevSessionId != null)
                 {
-                    await Kickout(userId, prevSessionId);
+                    await Kickout(userId);
                 }
-                await sessionRepository.Add(userId, sessionId);
+                await sessionRepository.Add(userId, username, sessionId);
             }
             finally
             {
                 semaphore.Release();
             }
-
             return new SessionModel() { SessionId = sessionId };
         }
 
@@ -45,7 +43,7 @@ namespace LoginServer.Services
                 string? _sessionId = await sessionRepository.Find(userId);
                 if (sessionId == _sessionId)
                 {
-                    await Kickout(userId, sessionId);
+                    await Kickout(userId);
                     return true;
                 }
                 else
@@ -64,30 +62,24 @@ namespace LoginServer.Services
             return Guid.NewGuid().ToString();
         }
 
-        private async Task Kickout(int userId, string sessionId)
+        private async Task Kickout(int userId)
         {
-            await RequestKickout(userId, sessionId);
+            await RequestKickout(userId);
             await sessionRepository.Remove(userId);
         }
 
-        private async Task RequestKickout(int userId, string sessionId)
+        private async Task RequestKickout(int userId)
         {
-            KickoutRequestDto kickoutRequestDto = new KickoutRequestDto()
-            {
-                UserId = userId,
-                SessionId = sessionId
-            };
-
             using (HttpClient httpClient = new HttpClient())
             {
                 httpClient.BaseAddress = new Uri(ServerConfig.MatchServerPrivateAddress);
-                await httpClient.PostAsJsonAsync("session/kickout", kickoutRequestDto);
+                await httpClient.PostAsync($"session/kickout?userId={userId}", null);
             }
 
             using (HttpClient httpClient = new HttpClient())
             {
                 httpClient.BaseAddress = new Uri(ServerConfig.GameServerPrivateAddress);
-                await httpClient.PostAsJsonAsync("session/kickout", kickoutRequestDto);
+                await httpClient.PostAsync($"session/kickout?userId={userId}", null);
             }
         }
     }
