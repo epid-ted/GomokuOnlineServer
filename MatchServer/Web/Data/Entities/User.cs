@@ -15,5 +15,12 @@ namespace MatchServer.Web.Data.Entities
 
         [Required]
         public string EncodedPassword { get; set; }
+
+        [Required]
+        public DateTime LastStaminaUpdateTime { get; set; }
+
+        [Required]
+        [Range(0, 120)]
+        public int Stamina { get; set; }
     }
 }

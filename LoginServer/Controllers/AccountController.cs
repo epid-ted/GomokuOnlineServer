@@ -1,4 +1,5 @@
-﻿using LoginServer.Data.DTOs.Client;
+﻿using LoginServer.Configuration;
+using LoginServer.Data.DTOs.Client;
 using LoginServer.Data.Models;
 using LoginServer.Exceptions;
 using LoginServer.Services;
@@ -30,12 +31,14 @@ namespace LoginServer.Controllers
                 return Unauthorized();
             }
 
-            SessionModel sessionModel = await sessionService.EnterGame(userModel.UserId);
+            SessionModel sessionModel = await sessionService.EnterGame(userModel.UserId, loginRequestDto.Username);
 
             LoginResponseDto loginResponseDto = new LoginResponseDto()
             {
                 UserId = userModel.UserId,
-                SessionId = sessionModel.SessionId
+                SessionId = sessionModel.SessionId,
+                MatchServerAddress = ServerConfig.MatchServerPublicAddress,
+                GameServerAddress = ServerConfig.GameServerPublicAddress
             };
 
             return Ok(loginResponseDto);

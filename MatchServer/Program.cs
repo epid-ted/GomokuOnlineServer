@@ -1,6 +1,7 @@
 using MatchServer.Configuration;
 using MatchServer.Web.Data;
 using MatchServer.Web.Repository;
+using MatchServer.Web.Services;
 using Microsoft.EntityFrameworkCore;
 using NetworkLibrary;
 using Server.Session;
@@ -42,15 +43,31 @@ namespace MatchServer
             builder.Services.AddDbContext<AppDbContext>(options =>
                 options.UseMySQL(builder.Configuration.GetConnectionString("AccountConnectionString"))
             );
+            IConnectionMultiplexer redis = ConnectionMultiplexer.Connect(
+                builder.Configuration.GetConnectionString("SessionConnectionString")
+            );
+            builder.Services.AddScoped(s => redis.GetDatabase());
+
             builder.Services.AddScoped<IMatchRepository, MatchRepositoryEFCore>();
+            builder.Services.AddScoped<IRankingRepository, RankingRepositoryRedis>();
+            builder.Services.AddScoped<IStaminaRepository, StaminaRepositoryEFCore>();
+            builder.Services.AddScoped<MatchService>();
+            builder.Services.AddScoped<RankingService>();
+            builder.Services.AddScoped<StaminaService>();
+
+            // feat
+            ServerConfig.AccountConnectionString = builder.Configuration.GetConnectionString("AccountConnectionString");
 
             RedisConfig.Redis = ConnectionMultiplexer.Connect(
                 builder.Configuration.GetConnectionString("SessionConnectionString")
             );
 
-            ServerConfig.LoginServer = builder.Configuration.GetValue<string>("ServerInfo:LoginServer");
-            ServerConfig.MatchServer = builder.Configuration.GetValue<string>("ServerInfo:MatchServer");
-            ServerConfig.GameServer = builder.Configuration.GetValue<string>("ServerInfo:GameServer");
+            ServerConfig.LoginServerPrivateAddress = builder.Configuration.GetValue<string>("ServerInfo:LoginServerPrivateAddress");
+            ServerConfig.MatchServerPrivateAddress = builder.Configuration.GetValue<string>("ServerInfo:MatchServerPrivateAddress");
+            ServerConfig.GameServerPrivateAddress = builder.Configuration.GetValue<string>("ServerInfo:GameServerPrivateAddress");
+            ServerConfig.LoginServerPublicAddress = builder.Configuration.GetValue<string>("ServerInfo:LoginServerPublicAddress");
+            ServerConfig.MatchServerPublicAddress = builder.Configuration.GetValue<string>("ServerInfo:MatchServerPublicAddress");
+            ServerConfig.GameServerPublicAddress = builder.Configuration.GetValue<string>("ServerInfo:GameServerPublicAddress");
             // ============================ Added ============================
 
             var app = builder.Build();
