@@ -24,13 +24,13 @@ namespace MatchServer.Web.Repository
         {
             double? score = await database.SortedSetScoreAsync(rankingKey, username);
 
-            if (score == null)
+            if (score == null || score == 0)
             {
                 return -1;
             }
             else
             {
-                return (int)await database.SortedSetLengthByValueAsync(rankingKey, score, double.PositiveInfinity);
+                return (int)await database.SortedSetLengthByValueAsync(rankingKey, score + 1, double.PositiveInfinity);
             }
         }
 
