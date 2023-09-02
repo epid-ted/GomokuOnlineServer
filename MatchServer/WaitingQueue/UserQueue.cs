@@ -62,7 +62,7 @@ namespace MatchServer.WaitingQueue
             session.Send(packet);
 
             // Decrease Stamina
-            await StaminaManager.ConsumeStamina(session.SessionId, 10);
+            await StaminaManager.Instance.ConsumeStamina(session.SessionId, 10);
 
             // For random turn
             if (rnd.Next(0, 2) == 1)
@@ -130,7 +130,7 @@ namespace MatchServer.WaitingQueue
 
         private async Task<bool> HasEnoughStamina(ClientSession session)
         {
-            return await StaminaManager.GetStamina(session.SessionId) >= 10;
+            return await StaminaManager.Instance.GetStamina(session.SessionId) >= 10;
         }
     }
 }

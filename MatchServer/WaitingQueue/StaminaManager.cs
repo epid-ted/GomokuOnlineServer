@@ -5,10 +5,14 @@ using Microsoft.EntityFrameworkCore;
 
 namespace MatchServer.WaitingQueue
 {
-    public static class StaminaManager
+    public class StaminaManager
     {
-        // static
-        public static async Task<int> GetStamina(int userId)
+        static StaminaManager instance = new StaminaManager();
+        public static StaminaManager Instance { get { return instance; } }
+
+        private StaminaManager() { }
+
+        public async Task<int> GetStamina(int userId)
         {
             // TODO: Refactor
             var optionsBuilder = new DbContextOptionsBuilder<AppDbContext>();
@@ -35,7 +39,7 @@ namespace MatchServer.WaitingQueue
         }
 
         // Stamina must be bigger than "value"
-        public static async Task<int> ConsumeStamina(int userId, int value)
+        public async Task<int> ConsumeStamina(int userId, int value)
         {
             // TODO: Refactor
             var optionsBuilder = new DbContextOptionsBuilder<AppDbContext>();
