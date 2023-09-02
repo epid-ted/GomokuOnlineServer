@@ -24,7 +24,7 @@ namespace MatchServer.Web.Repository
         {
             double? score = await database.SortedSetScoreAsync(rankingKey, username);
 
-            if (score == null || score == 0)
+            if (score == null)
             {
                 return -1;
             }
