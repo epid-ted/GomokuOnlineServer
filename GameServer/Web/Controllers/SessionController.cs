@@ -14,7 +14,7 @@ namespace GameServer.Web.Controllers
             int userId = kickoutRequestDto.UserId;
             string sessionId = kickoutRequestDto.SessionId;
 
-            Console.WriteLine($"Kickout UserId:{userId} SessionId:{sessionId}");
+            //Console.WriteLine($"Kickout UserId:{userId} SessionId:{sessionId}");
 
             ClientSession? session = SessionManager.Instance.Find(userId);
             if (session != null)
