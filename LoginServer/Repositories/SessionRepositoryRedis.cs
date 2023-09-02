@@ -18,9 +18,6 @@ namespace LoginServer.Repositories
 
             string usernameKey = $"username:{userId}";
             await database.StringSetAsync(usernameKey, username, new TimeSpan(1, 0, 0));
-
-            string rankingKey = "ranking";
-            await database.SortedSetAddAsync(rankingKey, username, 0);
         }
 
         public async Task Remove(int userId)
@@ -38,15 +35,11 @@ namespace LoginServer.Repositories
             return await database.StringGetAsync(sessionKey);
         }
 
-        public async Task<bool> Exists(int userId)
+        public async Task AddRanking(string username)
         {
-            string redisKey = MakeRedisSessionKey(userId);
-            return await database.KeyExistsAsync(redisKey);
-        }
-
-        private string MakeRedisSessionKey(int userId)
-        {
-            return "session:" + userId.ToString();
+            string rankingKey = "ranking";
+            await database.SortedSetAddAsync(rankingKey, username, 0);
+            return;
         }
     }
 }
