@@ -18,6 +18,9 @@ namespace LoginServer.Repositories
 
             string usernameKey = $"username:{userId}";
             await database.StringSetAsync(usernameKey, username, new TimeSpan(1, 0, 0));
+
+            string rankingKey = "ranking";
+            await database.SortedSetAddAsync(rankingKey, username, 0);
         }
 
         public async Task Remove(int userId)
