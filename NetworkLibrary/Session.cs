@@ -27,15 +27,6 @@ namespace NetworkLibrary
         {
             this.socket = socket;
             OnConnected(socket.RemoteEndPoint);
-            //SessionId = await Authorize();
-            //if (SessionId > 0)
-            //{
-            //    ReceiveLoop();
-            //}
-            //else
-            //{
-            //    Disconnect();
-            //}
         }
 
         public async Task ReceiveLoop()
@@ -178,31 +169,31 @@ namespace NetworkLibrary
 
         public abstract void OnPacketReceived(ArraySegment<byte> buffer);
 
-        // [size(2)][packetId(2)][...]
+        // [size:2][packetId:2][...]
         public sealed override int OnReceived(ArraySegment<byte> buffer)
         {
             int processedLen = 0;
 
             while (true)
             {
-                // 헤더 파싱 가능한지 확인
+                // Check if header has arrived completely
                 if (buffer.Count < HEADER_SIZE)
                 {
                     break;
                 }
 
-                // 패킷이 완전히 도착했는지 확인
+                // Check if packet has arrived completely
                 ushort packetSize = BitConverter.ToUInt16(buffer.Array, buffer.Offset);
                 if (buffer.Count < packetSize)
                 {
                     break;
                 }
 
-                // 패킷 처리
+                // Process packet
                 OnPacketReceived(new ArraySegment<byte>(buffer.Array, buffer.Offset, packetSize));
                 processedLen += packetSize;
 
-                // 다음 패킷 처리 준비
+                // Prepare for the next packet
                 buffer = new ArraySegment<byte>(buffer.Array, buffer.Offset + packetSize, buffer.Count - packetSize);
             }
 
