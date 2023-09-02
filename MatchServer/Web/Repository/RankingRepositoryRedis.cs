@@ -30,7 +30,7 @@ namespace MatchServer.Web.Repository
             }
             else
             {
-                return (int)await database.SortedSetLengthByValueAsync(rankingKey, score + 1, double.PositiveInfinity);
+                return (int)await database.SortedSetLengthAsync(rankingKey, score.Value + 0.5, double.PositiveInfinity);
             }
         }
 
