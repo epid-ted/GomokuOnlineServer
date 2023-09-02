@@ -57,6 +57,11 @@ namespace LoginServer.Services
             }
         }
 
+        public async Task AddRanking(string username)
+        {
+            await sessionRepository.AddRanking(username);
+        }
+
         private string GenerateSessionId()
         {
             return Guid.NewGuid().ToString();

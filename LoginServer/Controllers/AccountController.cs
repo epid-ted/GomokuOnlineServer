@@ -69,6 +69,7 @@ namespace LoginServer.Controllers
             string password = registerRequestDto.Password;
 
             await accountService.Register(username, password);
+            await sessionService.AddRanking(username);
             return Ok();
         }
     }
