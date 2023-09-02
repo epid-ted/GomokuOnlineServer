@@ -1,4 +1,3 @@
-using GameServer.Web.Data.DTOs.LoginServer;
 using Microsoft.AspNetCore.Mvc;
 using Server.Session;
 
@@ -9,12 +8,9 @@ namespace GameServer.Web.Controllers
     public class SessionController : ControllerBase
     {
         [HttpPost("kickout")]
-        public IActionResult Kickout(KickoutRequestDto kickoutRequestDto)
+        public IActionResult Kickout([FromQuery] int userId)
         {
-            int userId = kickoutRequestDto.UserId;
-            string sessionId = kickoutRequestDto.SessionId;
-
-            Console.WriteLine($"Kickout UserId:{userId} SessionId:{sessionId}");
+            //Console.WriteLine($"Kickout UserId:{userId} SessionId:{sessionId}");
 
             ClientSession? session = SessionManager.Instance.Find(userId);
             if (session != null)

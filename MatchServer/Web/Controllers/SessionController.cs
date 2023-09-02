@@ -11,7 +11,7 @@ namespace MatchServer.Web.Controllers
         [HttpPost("kickout")]
         public IActionResult Kickout([FromQuery] int userId)
         {
-            Console.WriteLine($"Kickout UserId:{userId}");
+            //Console.WriteLine($"Kickout UserId:{userId}");
 
             ClientSession? session = SessionManager.Instance.Find(userId);
             if (session != null)
