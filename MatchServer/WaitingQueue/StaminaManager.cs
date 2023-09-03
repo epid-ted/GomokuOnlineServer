@@ -10,6 +10,9 @@ namespace MatchServer.WaitingQueue
         static StaminaManager instance = new StaminaManager();
         public static StaminaManager Instance { get { return instance; } }
 
+        private const int maxStamina = 120;
+        private const int staminaRecoveryTimeInSeconds = 360;
+
         private StaminaManager() { }
 
         public async Task<int> GetStamina(int userId)
@@ -33,13 +36,13 @@ namespace MatchServer.WaitingQueue
 
                 DateTime dateTimeUtcNow = DateTime.UtcNow;
                 int seconds = (int)(dateTimeUtcNow - staminaInfo.LastStaminaUpdateTime).TotalSeconds;
-                int currentStamina = Math.Min(120, staminaInfo.Stamina + (seconds / 360));
+                int currentStamina = Math.Min(maxStamina, staminaInfo.Stamina + (seconds / staminaRecoveryTimeInSeconds));
                 return currentStamina;
             }
         }
 
         // Stamina must be bigger than "value"
-        public async Task<int> ConsumeStamina(int userId, int value)
+        public async Task<int> ConsumeStamina(int userId, int staminaCost)
         {
             // TODO: Refactor
             var optionsBuilder = new DbContextOptionsBuilder<AppDbContext>();
@@ -55,17 +58,17 @@ namespace MatchServer.WaitingQueue
 
                 DateTime dateTime = DateTime.UtcNow;
                 int seconds = (int)(dateTime - user.LastStaminaUpdateTime).TotalSeconds;
-                int currentStamina = Math.Min(120, user.Stamina + (seconds / 360));
+                int currentStamina = Math.Min(maxStamina, user.Stamina + (seconds / staminaRecoveryTimeInSeconds));
 
                 // Calculate the last moment when stamina value changed
-                if (currentStamina < 120)
+                if (currentStamina < maxStamina)
                 {
-                    int mod = seconds % 360;
+                    int mod = seconds % staminaRecoveryTimeInSeconds;
                     dateTime = dateTime.AddSeconds(-mod);
                 }
 
                 user.LastStaminaUpdateTime = dateTime;
-                user.Stamina = currentStamina - value;
+                user.Stamina = currentStamina - staminaCost;
 
                 await dbContext.SaveChangesAsync();
                 return currentStamina;
