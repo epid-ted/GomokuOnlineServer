@@ -15,10 +15,9 @@ namespace MatchServer.Web.Controllers
             this.rankingService = rankingService;
         }
 
-        [HttpGet("{userId}")]
-        public async Task<IActionResult> GetRanking([FromRoute] int userId)
+        [HttpGet("{username}")]
+        public async Task<IActionResult> GetRanking([FromRoute] string username)
         {
-            string username = await rankingService.GetUsername(userId);
             int ranking = await rankingService.GetRanking(username);
             return Ok(ranking);
         }

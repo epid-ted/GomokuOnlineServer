@@ -20,8 +20,8 @@ namespace MatchServer.Web.Repository
                 StartTime = matchResultModel.StartTime,
                 EndTime = matchResultModel.EndTime,
                 Result = matchResultModel.Result,
-                User1Id = matchResultModel.Participants[0],
-                User2Id = matchResultModel.Participants[1]
+                User1Id = matchResultModel.UserIds[0],
+                User2Id = matchResultModel.UserIds[1]
             };
 
             dbContext.Add(result);

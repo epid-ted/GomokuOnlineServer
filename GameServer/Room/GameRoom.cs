@@ -248,12 +248,15 @@ namespace GameServer.Room
 
         private async Task SaveMatchResult(int result)
         {
+            string[] PlayerNames = { Players[0].Username, Players[1].Username };
+
             SaveMatchResultRequestDto saveMatchResultRequestDto = new SaveMatchResultRequestDto()
             {
                 StartTime = startTime,
                 EndTime = endTime,
                 Result = result,
-                Participants = PlayerIds
+                UserIds = PlayerIds,
+                Usernames = PlayerNames
             };
 
             using (HttpClient httpClient = new HttpClient())
