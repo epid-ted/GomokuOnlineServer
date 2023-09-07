@@ -11,11 +11,13 @@ namespace MatchServer.Web.Controllers
     public class MatchController : ControllerBase
     {
         private readonly MatchService matchService;
+        private readonly RankingService rankingService;
         private readonly StaminaService accountService;
 
-        public MatchController(MatchService matchService, StaminaService accountService)
+        public MatchController(MatchService matchService, RankingService rankingService, StaminaService accountService)
         {
             this.matchService = matchService;
+            this.rankingService = rankingService;
             this.accountService = accountService;
         }
 
@@ -43,16 +45,23 @@ namespace MatchServer.Web.Controllers
                 StartTime = saveMatchResultDto.StartTime,
                 EndTime = saveMatchResultDto.EndTime,
                 Result = saveMatchResultDto.Result,
-                Participants = saveMatchResultDto.Participants
+                UserIds = saveMatchResultDto.UserIds,
+                Usernames = saveMatchResultDto.Usernames
             };
             await matchService.SaveMatchResult(matchResultModel);
 
-            // Restore stamina when the game is invalid
-            if (matchResultModel.Result == -1)
+            int result = saveMatchResultDto.Result;
+            if (result > 0)
             {
-                for (int i = 0; i < matchResultModel.Participants.Length; i++)
+                string winnerUsername = saveMatchResultDto.Usernames[result - 1];
+                await rankingService.UpdateRanking(winnerUsername);
+            }
+            else if (result == -1)
+            {
+                // Restore stamina when the game is invalid
+                for (int i = 0; i < matchResultModel.UserIds.Length; i++)
                 {
-                    await accountService.AddStamina(saveMatchResultDto.Participants[i], 10);
+                    await accountService.AddStamina(saveMatchResultDto.UserIds[i], 10);
                 }
             }
             return Ok();
