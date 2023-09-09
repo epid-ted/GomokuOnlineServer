@@ -1,4 +1,5 @@
-﻿using System.Net;
+﻿using System.Diagnostics;
+using System.Net;
 using System.Net.Sockets;
 
 
@@ -57,7 +58,7 @@ namespace NetworkLibrary
                 }
                 catch (Exception ex)
                 {
-                    Console.WriteLine(ex.ToString());
+                    Debug.WriteLine(ex.ToString());
                     Disconnect();
                     return;
                 }
@@ -115,7 +116,7 @@ namespace NetworkLibrary
                 }
                 catch (Exception ex)
                 {
-                    Console.WriteLine(ex.ToString());
+                    Debug.WriteLine(ex.ToString());
                     Disconnect();
                     return;
                 }
@@ -149,7 +150,7 @@ namespace NetworkLibrary
             }
             catch (Exception ex)
             {
-                Console.WriteLine(ex.ToString());
+                Debug.WriteLine(ex.ToString());
             }
         }
 

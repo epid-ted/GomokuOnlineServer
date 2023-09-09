@@ -5,6 +5,7 @@ using Google.Protobuf.GameProtocol;
 using NetworkLibrary;
 using Server.Packet;
 using StackExchange.Redis;
+using System.Diagnostics;
 using System.Net;
 using System.Net.Sockets;
 using System.Text;
@@ -34,7 +35,7 @@ namespace Server.Session
             }
 
             ReceiveLoop();
-            Console.WriteLine($"Client {endPoint} is connected.");
+            Debug.WriteLine($"Client {endPoint} is connected.");
         }
 
         private async Task<string?> FindUsername()
@@ -59,7 +60,7 @@ namespace Server.Session
 
             SessionManager.Instance.Remove(SessionId);
 
-            Console.WriteLine($"OnDisconnected : {endPoint}");
+            Debug.WriteLine($"OnDisconnected : {endPoint}");
         }
 
         // Return value
@@ -81,7 +82,7 @@ namespace Server.Session
                 }
                 catch (Exception ex)
                 {
-                    Console.WriteLine(ex.ToString());
+                    Debug.WriteLine(ex.ToString());
                     return -1;
                 }
             }
