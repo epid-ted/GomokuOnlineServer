@@ -17,11 +17,11 @@ namespace MatchServer.Web.Repository
 
         public async Task<StaminaModel> Get(int userId)
         {
-            User? user = await dbContext.Users
-                .Where(u => u.UserId == userId)
+            UserStamina? userStamina = await dbContext.UserStamina
+                .Where(us => us.UserId == userId)
                 .FirstOrDefaultAsync();
 
-            if (user == null)
+            if (userStamina == null)
             {
                 return new StaminaModel()
                 {
@@ -31,27 +31,27 @@ namespace MatchServer.Web.Repository
 
             return new StaminaModel()
             {
-                LastStaminaUpdateTime = user.LastStaminaUpdateTime,
-                Stamina = user.Stamina
+                LastUpdated = userStamina.LastUpdated,
+                Stamina = userStamina.Stamina
             };
         }
 
         public async Task AddStamina(int userId, int value)
         {
-            User? user = await dbContext.Users
-                .Where(u => u.UserId == userId)
+            UserStamina? userStamina = await dbContext.UserStamina
+                .Where(us => us.UserId == userId)
                 .FirstOrDefaultAsync();
 
-            if (user == null)
+            if (userStamina == null)
             {
                 return;
             }
 
-            int seconds = (int)(DateTime.UtcNow - user.LastStaminaUpdateTime).TotalSeconds;
-            int currentStamina = Math.Min(120, user.Stamina + (seconds / 360) + value);
+            int seconds = (int)(DateTime.UtcNow - userStamina.LastUpdated).TotalSeconds;
+            int currentStamina = Math.Min(120, userStamina.Stamina + (seconds / 360) + value);
 
-            user.LastStaminaUpdateTime = DateTime.UtcNow;
-            user.Stamina = currentStamina;
+            userStamina.LastUpdated = DateTime.UtcNow;
+            userStamina.Stamina = currentStamina;
             await dbContext.SaveChangesAsync();
         }
     }
