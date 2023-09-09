@@ -31,7 +31,7 @@ namespace MatchServer.Web.Controllers
             }
             GetStaminaResponseDto getStaminaResponseDto = new GetStaminaResponseDto()
             {
-                LastStaminaUpdateTime = staminaModel.LastStaminaUpdateTime,
+                LastUpdated = staminaModel.LastUpdated,
                 Stamina = staminaModel.Stamina
             };
             return Ok(getStaminaResponseDto);

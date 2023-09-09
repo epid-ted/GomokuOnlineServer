@@ -2,7 +2,7 @@
 {
     public class GetStaminaResponseDto
     {
-        public DateTime LastStaminaUpdateTime { get; set; }
+        public DateTime LastUpdated { get; set; }
         public int Stamina { get; set; }
     }
 }
