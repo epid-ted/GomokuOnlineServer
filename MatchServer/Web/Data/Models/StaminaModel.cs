@@ -3,7 +3,7 @@
     public class StaminaModel
     {
         public int UserId { get; set; }
-        public DateTime LastStaminaUpdateTime { get; set; }
+        public DateTime LastUpdated { get; set; }
         public int Stamina { get; set; }
     }
 }
