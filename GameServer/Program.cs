@@ -39,6 +39,11 @@ namespace GameServer
             builder.Services.AddSwaggerGen();
 
             // ============================ Added ============================
+            IConnectionMultiplexer redis = ConnectionMultiplexer.Connect(
+                builder.Configuration.GetConnectionString("SessionConnectionString")
+            );
+            builder.Services.AddScoped(s => redis.GetDatabase());
+
             RedisConfig.Redis = ConnectionMultiplexer.Connect(
                 builder.Configuration.GetConnectionString("SessionConnectionString")
             );
