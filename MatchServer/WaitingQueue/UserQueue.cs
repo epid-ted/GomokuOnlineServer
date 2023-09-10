@@ -22,7 +22,15 @@ namespace MatchServer.WaitingQueue
         public async Task Add(ClientSession session)
         {
             // Check if the user has enough stamina
-            if (!await HasEnoughStamina(session))
+            if (await HasEnoughStamina(session))
+            {
+                S_Response sResponsePacket = new S_Response()
+                {
+                    Successed = true
+                };
+                session.Send(sResponsePacket);
+            }
+            else
             {
                 S_Response sResponsePacket = new S_Response()
                 {
@@ -52,14 +60,11 @@ namespace MatchServer.WaitingQueue
                         participants[i] = Pop();
                     }
                 }
+                else
+                {
+                    return;
+                }
             }
-
-            // Send packet
-            S_Response packet = new S_Response()
-            {
-                Successed = true
-            };
-            session.Send(packet);
 
             // Decrease Stamina
             await StaminaManager.Instance.ConsumeStamina(session.SessionId, 10);
