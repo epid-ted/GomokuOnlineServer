@@ -220,16 +220,16 @@ namespace GameServer.Room
             };
             Broadcast(packet);
 
+            // Save the result of this match
+            endTime = DateTime.UtcNow;
+            SaveMatchResult(result);
+
             // Clean up the room when the game is finished
             for (int i = 0; i < Players.Length; i++)
             {
                 Players[i] = null;
             }
             RoomManager.Instance.Remove(RoomId);
-
-            // Save the result of this match
-            endTime = DateTime.UtcNow;
-            SaveMatchResult(result);
         }
 
         private void Broadcast(IMessage packet)
