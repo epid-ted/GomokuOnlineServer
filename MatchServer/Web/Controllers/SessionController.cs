@@ -29,6 +29,10 @@ namespace MatchServer.Web.Controllers
                     return BadRequest();
                 }
             }
+            else
+            {
+                return BadRequest();
+            }
 
             ClientSession? session = SessionManager.Instance.Find(userId);
             if (session != null)
