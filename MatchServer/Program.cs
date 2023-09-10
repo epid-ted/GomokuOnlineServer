@@ -49,6 +49,11 @@ namespace MatchServer
             );
             builder.Services.AddScoped(s => redis.GetDatabase());
 
+            IDatabase database = redis.GetDatabase();
+            string serverSessionId = Guid.NewGuid().ToString();
+            database.StringSet("serversession:MatchServer", serverSessionId);
+            ServerConfig.ServerSessionId = serverSessionId;
+
             builder.Services.AddScoped<IAuthorizationRepository, AuthorizationRepositoryRedis>();
             builder.Services.AddScoped<IMatchRepository, MatchRepositoryEFCore>();
             builder.Services.AddScoped<IRankingRepository, RankingRepositoryRedis>();

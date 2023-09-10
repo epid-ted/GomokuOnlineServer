@@ -9,5 +9,6 @@
         public static string MatchServerPublicAddress { get; set; }
         public static string GameServerPublicAddress { get; set; }
         public static string AccountConnectionString { get; set; }
+        public static string ServerSessionId { get; set; }
     }
 }

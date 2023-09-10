@@ -5,6 +5,7 @@ using Google.Protobuf;
 using Google.Protobuf.GameProtocol;
 using Google.Protobuf.WellKnownTypes;
 using Server.Session;
+using System.Net.Http.Headers;
 
 namespace GameServer.Room
 {
@@ -256,14 +257,13 @@ namespace GameServer.Room
                 EndTime = endTime,
                 Result = result,
                 UserIds = PlayerIds,
-                Usernames = PlayerNames,
-                ServerName = "GameServer",
-                ServerSessionId = ServerConfig.ServerSessionId
+                Usernames = PlayerNames
             };
 
             using (HttpClient httpClient = new HttpClient())
             {
                 httpClient.BaseAddress = new Uri(ServerConfig.MatchServerPrivateAddress);
+                httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("ServerSessionId", ServerConfig.ServerSessionId);
                 await httpClient.PostAsJsonAsync("match/result", saveMatchResultRequestDto);
             }
         }

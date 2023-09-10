@@ -2,6 +2,7 @@
 using MatchServer.Web.Data.Models;
 using MatchServer.Web.Services;
 using Microsoft.AspNetCore.Mvc;
+using System.Net.Http.Headers;
 
 namespace MatchServer.Web.Controllers
 {
@@ -18,13 +19,19 @@ namespace MatchServer.Web.Controllers
             this.authorizationService = authorizationService;
         }
 
-        [HttpGet]
-        public async Task<IActionResult> GetRanking(int userId, string sessionId)
+        [HttpGet("{userId}")]
+        public async Task<IActionResult> GetRanking(int userId, [FromHeader] string authorization)
         {
-            if (!await authorizationService.AuthorizeHttpRequestFromUser(userId, sessionId))
+            if (AuthenticationHeaderValue.TryParse(authorization, out var headerValue))
             {
-                return BadRequest();
+                var scheme = headerValue.Scheme;
+                var sessionId = headerValue.Parameter;
+                if (scheme != "SessionId" || sessionId == null || !await authorizationService.AuthorizeHttpRequestFromUser(userId, sessionId))
+                {
+                    return BadRequest();
+                }
             }
+
             int ranking = await rankingService.GetRanking(userId);
             return Ok(ranking);
         }

@@ -7,7 +7,5 @@
         public int Result { get; set; }
         public int[] UserIds { get; set; }
         public string[] Usernames { get; set; }
-        public string ServerName { get; set; }
-        public string ServerSessionId { get; set; }
     }
 }

@@ -3,6 +3,7 @@ using MatchServer.Web.Data.DTOs.GameServer;
 using MatchServer.Web.Data.Models;
 using MatchServer.Web.Services;
 using Microsoft.AspNetCore.Mvc;
+using System.Net.Http.Headers;
 
 namespace MatchServer.Web.Controllers
 {
@@ -24,11 +25,16 @@ namespace MatchServer.Web.Controllers
         }
 
         [HttpPost("result")]
-        public async Task<IActionResult> SaveMatchResult(SaveMatchResultRequestDto dto)
+        public async Task<IActionResult> SaveMatchResult(SaveMatchResultRequestDto dto, [FromHeader] string authorization)
         {
-            if (dto.ServerName != "GameServer" || !await authorizationService.AuthorizeHttpRequestFromServer(dto.ServerName, dto.ServerSessionId))
+            if (AuthenticationHeaderValue.TryParse(authorization, out var headerValue))
             {
-                return BadRequest();
+                var scheme = headerValue.Scheme;
+                var serverSessionId = headerValue.Parameter;
+                if (scheme != "ServerSessionId" || serverSessionId == null || !await authorizationService.AuthorizeHttpRequestFromServer("GameServer", serverSessionId))
+                {
+                    return BadRequest();
+                }
             }
 
             MatchResultModel matchResultModel = new MatchResultModel()
