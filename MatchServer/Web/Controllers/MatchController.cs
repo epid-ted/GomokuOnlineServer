@@ -36,6 +36,10 @@ namespace MatchServer.Web.Controllers
                     return BadRequest();
                 }
             }
+            else
+            {
+                return BadRequest();
+            }
 
             MatchResultModel matchResultModel = new MatchResultModel()
             {

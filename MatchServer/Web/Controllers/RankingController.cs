@@ -31,6 +31,10 @@ namespace MatchServer.Web.Controllers
                     return BadRequest();
                 }
             }
+            else
+            {
+                return BadRequest();
+            }
 
             int ranking = await rankingService.GetRanking(userId);
             return Ok(ranking);

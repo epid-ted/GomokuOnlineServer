@@ -29,6 +29,10 @@ namespace GameServer.Web.Controllers
                     return BadRequest();
                 }
             }
+            else
+            {
+                return BadRequest();
+            }
 
             Debug.WriteLine($"Kickout UserId:{userId}");
 

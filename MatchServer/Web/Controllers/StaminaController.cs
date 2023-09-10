@@ -32,6 +32,10 @@ namespace MatchServer.Web.Controllers
                     return BadRequest();
                 }
             }
+            else
+            {
+                return BadRequest();
+            }
 
             StaminaModel staminaModel = await staminaService.GetStamina(userId);
             if (staminaModel.Stamina == -1)
