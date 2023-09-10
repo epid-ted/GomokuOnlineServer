@@ -1,3 +1,4 @@
+using Common.Authorization;
 using GameServer.Configuration;
 using GameServer.Room;
 using NetworkLibrary;
@@ -45,6 +46,9 @@ namespace GameServer
             string serverSessionId = Guid.NewGuid().ToString();
             database.StringSet("serversession:GameServer", serverSessionId);
             ServerConfig.ServerSessionId = serverSessionId;
+
+            builder.Services.AddScoped<IAuthorizationRepository, AuthorizationRepositoryRedis>();
+            builder.Services.AddScoped<AuthorizationService>();
 
             ServerConfig.LoginServerPrivateAddress = builder.Configuration.GetValue<string>("ServerInfo:LoginServerPrivateAddress");
             ServerConfig.MatchServerPrivateAddress = builder.Configuration.GetValue<string>("ServerInfo:MatchServerPrivateAddress");
