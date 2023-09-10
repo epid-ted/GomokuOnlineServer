@@ -1,4 +1,4 @@
-using MatchServer.Web.Data.DTOs.Client;
+using Common.Authorization;
 using MatchServer.Web.Data.DTOs.GameServer;
 using MatchServer.Web.Data.Models;
 using MatchServer.Web.Services;
@@ -12,48 +12,39 @@ namespace MatchServer.Web.Controllers
     {
         private readonly MatchService matchService;
         private readonly RankingService rankingService;
-        private readonly StaminaService accountService;
+        private readonly StaminaService staminaService;
+        private readonly AuthorizationService authorizationService;
 
-        public MatchController(MatchService matchService, RankingService rankingService, StaminaService accountService)
+        public MatchController(AuthorizationService authorizationService, MatchService matchService, RankingService rankingService, StaminaService staminaService)
         {
+            this.authorizationService = authorizationService;
             this.matchService = matchService;
             this.rankingService = rankingService;
-            this.accountService = accountService;
+            this.staminaService = staminaService;
         }
 
-        [HttpGet("stamina/{userId}")]
-        public async Task<IActionResult> GetStamina(int userId)
+        [HttpPost("result")]
+        public async Task<IActionResult> SaveMatchResult(SaveMatchResultRequestDto dto)
         {
-            StaminaModel staminaModel = await accountService.GetStamina(userId);
-            if (staminaModel.Stamina == -1)
+            if (dto.ServerName != "GameServer" || !await authorizationService.AuthorizeHttpRequestFromServer(dto.ServerName, dto.ServerSessionId))
             {
                 return BadRequest();
             }
-            GetStaminaResponseDto getStaminaResponseDto = new GetStaminaResponseDto()
-            {
-                LastUpdated = staminaModel.LastUpdated,
-                Stamina = staminaModel.Stamina
-            };
-            return Ok(getStaminaResponseDto);
-        }
 
-        [HttpPost("result/save")]
-        public async Task<IActionResult> SaveMatchResult(SaveMatchResultRequestDto saveMatchResultDto)
-        {
             MatchResultModel matchResultModel = new MatchResultModel()
             {
-                StartTime = saveMatchResultDto.StartTime,
-                EndTime = saveMatchResultDto.EndTime,
-                Result = saveMatchResultDto.Result,
-                UserIds = saveMatchResultDto.UserIds,
-                Usernames = saveMatchResultDto.Usernames
+                StartTime = dto.StartTime,
+                EndTime = dto.EndTime,
+                Result = dto.Result,
+                UserIds = dto.UserIds,
+                Usernames = dto.Usernames
             };
             await matchService.SaveMatchResult(matchResultModel);
 
-            int result = saveMatchResultDto.Result;
+            int result = dto.Result;
             if (result > 0)
             {
-                string winnerUsername = saveMatchResultDto.Usernames[result - 1];
+                string winnerUsername = dto.Usernames[result - 1];
                 await rankingService.UpdateRanking(winnerUsername);
             }
             else if (result == -1)
@@ -61,7 +52,7 @@ namespace MatchServer.Web.Controllers
                 // Restore stamina when the game is invalid
                 for (int i = 0; i < matchResultModel.UserIds.Length; i++)
                 {
-                    await accountService.AddStamina(saveMatchResultDto.UserIds[i], 10);
+                    await staminaService.AddStamina(dto.UserIds[i], 10);
                 }
             }
             return Ok();

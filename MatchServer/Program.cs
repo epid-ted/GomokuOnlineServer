@@ -1,3 +1,4 @@
+using Common.Authorization;
 using MatchServer.Configuration;
 using MatchServer.Web.Data;
 using MatchServer.Web.Repository;
@@ -48,9 +49,11 @@ namespace MatchServer
             );
             builder.Services.AddScoped(s => redis.GetDatabase());
 
+            builder.Services.AddScoped<IAuthorizationRepository, AuthorizationRepositoryRedis>();
             builder.Services.AddScoped<IMatchRepository, MatchRepositoryEFCore>();
             builder.Services.AddScoped<IRankingRepository, RankingRepositoryRedis>();
             builder.Services.AddScoped<IStaminaRepository, StaminaRepositoryEFCore>();
+            builder.Services.AddScoped<AuthorizationService>();
             builder.Services.AddScoped<MatchService>();
             builder.Services.AddScoped<RankingService>();
             builder.Services.AddScoped<StaminaService>();
