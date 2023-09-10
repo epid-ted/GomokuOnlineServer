@@ -25,14 +25,16 @@ namespace LoginServer
             options.UseMySQL(builder.Configuration.GetConnectionString("AccountConnectionString"))
             //options.UseSqlServer(builder.Configuration.GetConnectionString("AccountConnectionString"))
             );
-            //builder.Services.AddDbContextPool<AppDbContext>(options =>
-            //    options.UseSqlServer(builder.Configuration.GetConnectionString("AccountConnectionString"))
-            //);
 
             IConnectionMultiplexer redis = ConnectionMultiplexer.Connect(
                 builder.Configuration.GetConnectionString("SessionConnectionString")
             );
             builder.Services.AddScoped(s => redis.GetDatabase());
+
+            IDatabase database = redis.GetDatabase();
+            string serverSessionId = Guid.NewGuid().ToString();
+            database.StringSet("serversession:LoginServer", serverSessionId);
+            ServerConfig.ServerSessionId = serverSessionId;
 
             builder.Services.AddScoped<IAccountRepository, AccountRepositoryEFCore>();
             builder.Services.AddScoped<ISessionRepository, SessionRepositoryRedis>();

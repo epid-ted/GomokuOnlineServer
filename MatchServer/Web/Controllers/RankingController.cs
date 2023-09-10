@@ -1,4 +1,5 @@
-﻿using MatchServer.Web.Data.Models;
+﻿using Common.Authorization;
+using MatchServer.Web.Data.Models;
 using MatchServer.Web.Services;
 using Microsoft.AspNetCore.Mvc;
 
@@ -9,16 +10,22 @@ namespace MatchServer.Web.Controllers
     public class RankingController : ControllerBase
     {
         private readonly RankingService rankingService;
+        private readonly AuthorizationService authorizationService;
 
-        public RankingController(RankingService rankingService)
+        public RankingController(RankingService rankingService, AuthorizationService authorizationService)
         {
             this.rankingService = rankingService;
+            this.authorizationService = authorizationService;
         }
 
-        [HttpGet("{username}")]
-        public async Task<IActionResult> GetRanking([FromRoute] string username)
+        [HttpGet]
+        public async Task<IActionResult> GetRanking(int userId, string sessionId)
         {
-            int ranking = await rankingService.GetRanking(username);
+            if (!await authorizationService.AuthorizeHttpRequestFromUser(userId, sessionId))
+            {
+                return BadRequest();
+            }
+            int ranking = await rankingService.GetRanking(userId);
             return Ok(ranking);
         }
 

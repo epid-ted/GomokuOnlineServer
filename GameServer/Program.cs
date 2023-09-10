@@ -41,6 +41,10 @@ namespace GameServer
             RedisConfig.Redis = ConnectionMultiplexer.Connect(
                 builder.Configuration.GetConnectionString("SessionConnectionString")
             );
+            IDatabase database = RedisConfig.Redis.GetDatabase();
+            string serverSessionId = Guid.NewGuid().ToString();
+            database.StringSet("serversession:GameServer", serverSessionId);
+            ServerConfig.ServerSessionId = serverSessionId;
 
             ServerConfig.LoginServerPrivateAddress = builder.Configuration.GetValue<string>("ServerInfo:LoginServerPrivateAddress");
             ServerConfig.MatchServerPrivateAddress = builder.Configuration.GetValue<string>("ServerInfo:MatchServerPrivateAddress");

@@ -1,4 +1,5 @@
 ﻿using LoginServer.Configuration;
+using LoginServer.Data.DTOs;
 using LoginServer.Data.Models;
 using LoginServer.Repositories;
 
@@ -75,16 +76,23 @@ namespace LoginServer.Services
 
         private async Task RequestKickout(int userId)
         {
+            KickoutRequestDto dto = new KickoutRequestDto()
+            {
+                UserId = userId,
+                ServerName = "LoginServer",
+                ServerSessionId = ServerConfig.ServerSessionId
+            };
+
             using (HttpClient httpClient = new HttpClient())
             {
                 httpClient.BaseAddress = new Uri(ServerConfig.MatchServerPrivateAddress);
-                await httpClient.PostAsync($"session/kickout?userId={userId}", null);
+                await httpClient.PostAsJsonAsync($"session/kickout", dto);
             }
 
             using (HttpClient httpClient = new HttpClient())
             {
                 httpClient.BaseAddress = new Uri(ServerConfig.GameServerPrivateAddress);
-                await httpClient.PostAsync($"session/kickout?userId={userId}", null);
+                await httpClient.PostAsJsonAsync($"session/kickout", dto);
             }
         }
     }

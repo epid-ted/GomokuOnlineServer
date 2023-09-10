@@ -256,13 +256,15 @@ namespace GameServer.Room
                 EndTime = endTime,
                 Result = result,
                 UserIds = PlayerIds,
-                Usernames = PlayerNames
+                Usernames = PlayerNames,
+                ServerName = "GameServer",
+                ServerSessionId = ServerConfig.ServerSessionId
             };
 
             using (HttpClient httpClient = new HttpClient())
             {
                 httpClient.BaseAddress = new Uri(ServerConfig.MatchServerPrivateAddress);
-                await httpClient.PostAsJsonAsync("match/result/save", saveMatchResultRequestDto);
+                await httpClient.PostAsJsonAsync("match/result", saveMatchResultRequestDto);
             }
         }
     }
