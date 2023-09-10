@@ -5,6 +5,7 @@ using Google.Protobuf;
 using Google.Protobuf.GameProtocol;
 using Google.Protobuf.WellKnownTypes;
 using Server.Session;
+using System.Net.Http.Headers;
 
 namespace GameServer.Room
 {
@@ -219,16 +220,16 @@ namespace GameServer.Room
             };
             Broadcast(packet);
 
+            // Save the result of this match
+            endTime = DateTime.UtcNow;
+            SaveMatchResult(result);
+
             // Clean up the room when the game is finished
             for (int i = 0; i < Players.Length; i++)
             {
                 Players[i] = null;
             }
             RoomManager.Instance.Remove(RoomId);
-
-            // Save the result of this match
-            endTime = DateTime.UtcNow;
-            SaveMatchResult(result);
         }
 
         private void Broadcast(IMessage packet)
@@ -248,18 +249,22 @@ namespace GameServer.Room
 
         private async Task SaveMatchResult(int result)
         {
+            string[] PlayerNames = { Players[0].Username, Players[1].Username };
+
             SaveMatchResultRequestDto saveMatchResultRequestDto = new SaveMatchResultRequestDto()
             {
                 StartTime = startTime,
                 EndTime = endTime,
                 Result = result,
-                Participants = PlayerIds
+                UserIds = PlayerIds,
+                Usernames = PlayerNames
             };
 
             using (HttpClient httpClient = new HttpClient())
             {
                 httpClient.BaseAddress = new Uri(ServerConfig.MatchServerPrivateAddress);
-                await httpClient.PostAsJsonAsync("match/result/save", saveMatchResultRequestDto);
+                httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("ServerSessionId", ServerConfig.ServerSessionId);
+                await httpClient.PostAsJsonAsync("match/result", saveMatchResultRequestDto);
             }
         }
     }

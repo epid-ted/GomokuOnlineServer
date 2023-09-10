@@ -9,6 +9,7 @@ namespace LoginServer.Repositories
     public class AccountRepositoryEFCore : IAccountRepository
     {
         private readonly AppDbContext dbContext;
+        private const int maxStamina = 120;
 
         public AccountRepositoryEFCore(AppDbContext dbContext)
         {
@@ -20,10 +21,16 @@ namespace LoginServer.Repositories
             var user = new User()
             {
                 Username = username,
-                EncodedPassword = encodedPassword,
-                LastStaminaUpdateTime = DateTime.UtcNow,
-                Stamina = 120
+                EncodedPassword = encodedPassword
             };
+
+            var userStamina = new UserStamina
+            {
+                LastUpdated = DateTime.UtcNow,
+                Stamina = maxStamina
+            };
+
+            user.UserStamina = userStamina;
 
             try
             {

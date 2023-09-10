@@ -1,4 +1,5 @@
 ﻿using Common.Authorization;
+using MatchServer.Web.Data.DTOs.Client;
 using MatchServer.Web.Data.Models;
 using MatchServer.Web.Services;
 using Microsoft.AspNetCore.Mvc;
@@ -7,20 +8,20 @@ using System.Net.Http.Headers;
 namespace MatchServer.Web.Controllers
 {
     [ApiController]
-    [Route("ranking")]
-    public class RankingController : ControllerBase
+    [Route("stamina")]
+    public class StaminaController : ControllerBase
     {
-        private readonly RankingService rankingService;
         private readonly AuthorizationService authorizationService;
+        private readonly StaminaService staminaService;
 
-        public RankingController(RankingService rankingService, AuthorizationService authorizationService)
+        public StaminaController(AuthorizationService authorizationService, StaminaService staminaService)
         {
-            this.rankingService = rankingService;
             this.authorizationService = authorizationService;
+            this.staminaService = staminaService;
         }
 
         [HttpGet("{userId}")]
-        public async Task<IActionResult> GetRanking(int userId, [FromHeader] string authorization)
+        public async Task<IActionResult> GetStamina(int userId, [FromHeader] string authorization)
         {
             if (AuthenticationHeaderValue.TryParse(authorization, out var headerValue))
             {
@@ -36,21 +37,17 @@ namespace MatchServer.Web.Controllers
                 return BadRequest();
             }
 
-            int ranking = await rankingService.GetRanking(userId);
-            return Ok(ranking);
-        }
-
-        [HttpGet]
-        public async Task<IActionResult> GetRankings([FromQuery] int from, [FromQuery] int to)
-        {
-            int length = to - from + 1;
-            if (from < 0 || length < 0 || length > 100)
+            StaminaModel staminaModel = await staminaService.GetStamina(userId);
+            if (staminaModel.Stamina == -1)
             {
                 return BadRequest();
             }
-
-            RankingEntry[] rankingEntries = await rankingService.GetRankings(from, to);
-            return Ok(rankingEntries);
+            GetStaminaResponseDto getStaminaResponseDto = new GetStaminaResponseDto()
+            {
+                LastUpdated = staminaModel.LastUpdated,
+                Stamina = staminaModel.Stamina
+            };
+            return Ok(getStaminaResponseDto);
         }
     }
 }

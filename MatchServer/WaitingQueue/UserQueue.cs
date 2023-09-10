@@ -22,7 +22,15 @@ namespace MatchServer.WaitingQueue
         public async Task Add(ClientSession session)
         {
             // Check if the user has enough stamina
-            if (!await HasEnoughStamina(session))
+            if (await HasEnoughStamina(session))
+            {
+                S_Response sResponsePacket = new S_Response()
+                {
+                    Successed = true
+                };
+                session.Send(sResponsePacket);
+            }
+            else
             {
                 S_Response sResponsePacket = new S_Response()
                 {
@@ -52,24 +60,10 @@ namespace MatchServer.WaitingQueue
                         participants[i] = Pop();
                     }
                 }
-            }
-
-            // Send packet
-            S_Response packet = new S_Response()
-            {
-                Successed = true
-            };
-            session.Send(packet);
-
-            // Decrease Stamina
-            await StaminaManager.Instance.ConsumeStamina(session.SessionId, 10);
-
-            // For random turn
-            if (rnd.Next(0, 2) == 1)
-            {
-                int tmp = participants[0];
-                participants[0] = participants[1];
-                participants[1] = tmp;
+                else
+                {
+                    return;
+                }
             }
 
             CreateRoomRequest(participants);
@@ -92,6 +86,20 @@ namespace MatchServer.WaitingQueue
 
         private async Task CreateRoomRequest(int[] participants)
         {
+            // Decrease Stamina
+            foreach (int i in participants)
+            {
+                await StaminaManager.Instance.ConsumeStamina(i, 10);
+            }
+
+            // For random turn
+            if (rnd.Next(0, 2) == 1)
+            {
+                int tmp = participants[0];
+                participants[0] = participants[1];
+                participants[1] = tmp;
+            }
+
             using (HttpClient httpClient = new HttpClient())
             {
                 CreateRoomRequestDto createRoomRequestDto = new CreateRoomRequestDto()

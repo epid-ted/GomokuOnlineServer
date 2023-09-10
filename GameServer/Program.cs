@@ -1,3 +1,4 @@
+using Common.Authorization;
 using GameServer.Configuration;
 using GameServer.Room;
 using NetworkLibrary;
@@ -38,9 +39,21 @@ namespace GameServer
             builder.Services.AddSwaggerGen();
 
             // ============================ Added ============================
+            IConnectionMultiplexer redis = ConnectionMultiplexer.Connect(
+                builder.Configuration.GetConnectionString("SessionConnectionString")
+            );
+            builder.Services.AddScoped(s => redis.GetDatabase());
+
             RedisConfig.Redis = ConnectionMultiplexer.Connect(
                 builder.Configuration.GetConnectionString("SessionConnectionString")
             );
+            IDatabase database = RedisConfig.Redis.GetDatabase();
+            string serverSessionId = Guid.NewGuid().ToString();
+            database.StringSet("serversession:GameServer", serverSessionId);
+            ServerConfig.ServerSessionId = serverSessionId;
+
+            builder.Services.AddScoped<IAuthorizationRepository, AuthorizationRepositoryRedis>();
+            builder.Services.AddScoped<AuthorizationService>();
 
             ServerConfig.LoginServerPrivateAddress = builder.Configuration.GetValue<string>("ServerInfo:LoginServerPrivateAddress");
             ServerConfig.MatchServerPrivateAddress = builder.Configuration.GetValue<string>("ServerInfo:MatchServerPrivateAddress");

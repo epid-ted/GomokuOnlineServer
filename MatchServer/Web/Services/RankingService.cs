@@ -12,13 +12,9 @@ namespace MatchServer.Web.Services
             this.rankingRepository = rankingRepository;
         }
 
-        public async Task<string> GetUsername(int userId)
+        public async Task<int> GetRanking(int userId)
         {
-            return await rankingRepository.GetUsername(userId);
-        }
-
-        public async Task<int> GetRanking(string username)
-        {
+            string username = await rankingRepository.GetUsername(userId);
             int higherScoreCount = await rankingRepository.GetHigherScoreCount(username);
             int ranking = higherScoreCount + 1;
             return ranking;
@@ -49,6 +45,11 @@ namespace MatchServer.Web.Services
                 }
             }
             return rankingEntries;
+        }
+
+        public async Task UpdateRanking(string winnerUsername)
+        {
+            await rankingRepository.AddScore(winnerUsername, 1);
         }
     }
 }

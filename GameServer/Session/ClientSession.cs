@@ -5,6 +5,7 @@ using Google.Protobuf.GameProtocol;
 using NetworkLibrary;
 using Server.Packet;
 using StackExchange.Redis;
+using System.Diagnostics;
 using System.Net;
 using System.Net.Sockets;
 using System.Text;
@@ -14,6 +15,7 @@ namespace Server.Session
     public class ClientSession : PacketSession
     {
         public GameRoom? Room { get; set; }
+        public string Username { get; private set; }
 
         public override async Task OnConnected(EndPoint endPoint)
         {
@@ -23,8 +25,23 @@ namespace Server.Session
                 Disconnect();
                 return;
             }
+
+            // Get username from redis
+            Username = await FindUsername();
+            if (Username == null)
+            {
+                Disconnect();
+                return;
+            }
+
             ReceiveLoop();
-            Console.WriteLine($"Client {endPoint} is connected.");
+            Debug.WriteLine($"Client {endPoint} is connected.");
+        }
+
+        private async Task<string?> FindUsername()
+        {
+            IDatabase db = RedisConfig.Redis.GetDatabase();
+            return await db.StringGetAsync($"username:{SessionId}");
         }
 
         public override void OnPacketReceived(ArraySegment<byte> buffer)
@@ -43,7 +60,7 @@ namespace Server.Session
 
             SessionManager.Instance.Remove(SessionId);
 
-            Console.WriteLine($"OnDisconnected : {endPoint}");
+            Debug.WriteLine($"OnDisconnected : {endPoint}");
         }
 
         // Return value
@@ -65,7 +82,7 @@ namespace Server.Session
                 }
                 catch (Exception ex)
                 {
-                    Console.WriteLine(ex.ToString());
+                    Debug.WriteLine(ex.ToString());
                     return -1;
                 }
             }

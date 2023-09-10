@@ -11,12 +11,17 @@ namespace MatchServer.Web.Data
         }
 
         public DbSet<User> Users { get; set; }
+        public DbSet<UserStamina> UserStamina { get; set; }
         public DbSet<MatchResult> MatchResults { get; set; }
 
         protected override void OnModelCreating(ModelBuilder builder)
         {
             builder.Entity<User>()
                 .HasIndex(u => u.Username)
+                .IsUnique();
+
+            builder.Entity<UserStamina>()
+                .HasIndex(us => us.UserId)
                 .IsUnique();
         }
     }

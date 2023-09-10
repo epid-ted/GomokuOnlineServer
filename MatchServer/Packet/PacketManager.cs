@@ -1,6 +1,7 @@
 ﻿using Google.Protobuf;
 using Google.Protobuf.MatchProtocol;
 using NetworkLibrary;
+using System.Diagnostics;
 
 namespace Server.Packet
 {
@@ -43,7 +44,7 @@ namespace Server.Packet
             }
             else
             {
-                Console.WriteLine("Disconnected");
+                Debug.WriteLine("Disconnected");
                 session.Disconnect();
             }
         }
