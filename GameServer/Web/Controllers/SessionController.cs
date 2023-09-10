@@ -1,8 +1,8 @@
 using Common.Authorization;
-using GameServer.Web.Data.DTOs.LoginServer;
 using Microsoft.AspNetCore.Mvc;
 using Server.Session;
 using System.Diagnostics;
+using System.Net.Http.Headers;
 
 namespace GameServer.Web.Controllers
 {
@@ -17,16 +17,20 @@ namespace GameServer.Web.Controllers
             this.authorizationService = authorizationService;
         }
 
-        [HttpPost("kickout")]
-        public async Task<IActionResult> KickoutAsync(KickoutRequestDto dto)
+        [HttpPost("kickout/{userId}")]
+        public async Task<IActionResult> KickoutAsync([FromRoute] int userId, [FromHeader] string authorization)
         {
-            int userId = dto.UserId;
-            Debug.WriteLine($"Kickout UserId:{userId}");
-
-            if (dto.ServerName != "LoginServer" || !await authorizationService.AuthorizeHttpRequestFromServer(dto.ServerName, dto.ServerSessionId))
+            if (AuthenticationHeaderValue.TryParse(authorization, out var headerValue))
             {
-                return BadRequest();
+                var scheme = headerValue.Scheme;
+                var serverSessionId = headerValue.Parameter;
+                if (scheme != "ServerSessionId" || serverSessionId == null || !await authorizationService.AuthorizeHttpRequestFromServer("LoginServer", serverSessionId))
+                {
+                    return BadRequest();
+                }
             }
+
+            Debug.WriteLine($"Kickout UserId:{userId}");
 
             ClientSession? session = SessionManager.Instance.Find(userId);
             if (session != null)
