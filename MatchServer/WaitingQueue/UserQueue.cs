@@ -66,17 +66,6 @@ namespace MatchServer.WaitingQueue
                 }
             }
 
-            // Decrease Stamina
-            await StaminaManager.Instance.ConsumeStamina(session.SessionId, 10);
-
-            // For random turn
-            if (rnd.Next(0, 2) == 1)
-            {
-                int tmp = participants[0];
-                participants[0] = participants[1];
-                participants[1] = tmp;
-            }
-
             CreateRoomRequest(participants);
         }
 
@@ -97,6 +86,20 @@ namespace MatchServer.WaitingQueue
 
         private async Task CreateRoomRequest(int[] participants)
         {
+            // Decrease Stamina
+            foreach (int i in participants)
+            {
+                await StaminaManager.Instance.ConsumeStamina(i, 10);
+            }
+
+            // For random turn
+            if (rnd.Next(0, 2) == 1)
+            {
+                int tmp = participants[0];
+                participants[0] = participants[1];
+                participants[1] = tmp;
+            }
+
             using (HttpClient httpClient = new HttpClient())
             {
                 CreateRoomRequestDto createRoomRequestDto = new CreateRoomRequestDto()
