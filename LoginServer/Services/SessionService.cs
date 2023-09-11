@@ -1,7 +1,6 @@
 ﻿using LoginServer.Configuration;
 using LoginServer.Data.Models;
 using LoginServer.Repositories;
-using System.Net.Http.Headers;
 
 namespace LoginServer.Services
 {
@@ -76,19 +75,11 @@ namespace LoginServer.Services
 
         private async Task RequestKickout(int userId)
         {
-            using (HttpClient httpClient = new HttpClient())
-            {
-                httpClient.BaseAddress = new Uri(ServerConfig.MatchServerPrivateAddress);
-                httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("ServerSessionId", ServerConfig.ServerSessionId);
-                await httpClient.PostAsync($"session/kickout/{userId}", null);
-            }
+            HttpClient httpClientForMatchServer = HttpClientConfig.HttpClientForMatchServer;
+            await httpClientForMatchServer.PostAsync($"session/kickout/{userId}", null);
 
-            using (HttpClient httpClient = new HttpClient())
-            {
-                httpClient.BaseAddress = new Uri(ServerConfig.GameServerPrivateAddress);
-                httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("ServerSessionId", ServerConfig.ServerSessionId);
-                await httpClient.PostAsync($"session/kickout/{userId}", null);
-            }
+            HttpClient httpClientForGameServer = HttpClientConfig.HttpClientForGameServer;
+            await httpClientForGameServer.PostAsync($"session/kickout/{userId}", null);
         }
     }
 }

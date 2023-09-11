@@ -100,27 +100,24 @@ namespace MatchServer.WaitingQueue
                 participants[1] = tmp;
             }
 
-            using (HttpClient httpClient = new HttpClient())
+            CreateRoomRequestDto createRoomRequestDto = new CreateRoomRequestDto()
             {
-                CreateRoomRequestDto createRoomRequestDto = new CreateRoomRequestDto()
-                {
-                    Participants = participants
-                };
+                Participants = participants
+            };
 
-                httpClient.BaseAddress = new Uri(ServerConfig.GameServerPrivateAddress);
-                HttpResponseMessage response = await httpClient.PostAsJsonAsync("room/create", createRoomRequestDto);
+            HttpClient httpClient = HttpClientConfig.HttpClientForGameServer;
+            HttpResponseMessage response = await httpClient.PostAsJsonAsync("room/create", createRoomRequestDto);
 
-                string responseBody = await response.Content.ReadAsStringAsync();
+            string responseBody = await response.Content.ReadAsStringAsync();
 
-                JsonSerializerOptions options = new JsonSerializerOptions
-                {
-                    PropertyNamingPolicy = JsonNamingPolicy.CamelCase
-                };
-                CreateRoomResponseDto createRoomResponseDto = JsonSerializer.Deserialize<CreateRoomResponseDto>(responseBody, options);
+            JsonSerializerOptions options = new JsonSerializerOptions
+            {
+                PropertyNamingPolicy = JsonNamingPolicy.CamelCase
+            };
+            CreateRoomResponseDto createRoomResponseDto = JsonSerializer.Deserialize<CreateRoomResponseDto>(responseBody, options);
 
-                int roomId = createRoomResponseDto.RoomId;
-                JoinRoomRequest(participants, roomId);
-            }
+            int roomId = createRoomResponseDto.RoomId;
+            JoinRoomRequest(participants, roomId);
         }
 
         private void JoinRoomRequest(int[] participants, int roomId)
