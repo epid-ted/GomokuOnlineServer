@@ -15,6 +15,7 @@ GomokuOnline의 서버는 LoginServer, MatchServer, GameServer, NetworkLibrary�
 
 ## 시작 가이드
 1. 요구 사항
+   - [.NET SDK 6.0](https://dotnet.microsoft.com/en-us/download/dotnet/6.0)
 2. 프로젝트 클론
    ```
    git clone https://github.com/aajuy/GomokuOnlineServer.git
