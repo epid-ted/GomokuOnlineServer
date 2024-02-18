@@ -9,24 +9,9 @@ GomokuOnline의 서버는 LoginServer, MatchServer, GameServer, NetworkLibrary�
 - GameServer: 실제 게임 플레이를 담당합니다.
 - NetworkLibrary: TCP 소켓 통신을 담당합니다.
 ## 기술 스택
-- 서버: .NET Core, ASP .NET Core, Entity Framework Core
-- 인프라: AWS EC2, RDS, MemoryDB for Redis, Terraform
-- 패킷 직렬화: Protocol Buffers
-
-## 시작 가이드
-1. 요구 사항
-   - [.NET SDK 6.0](https://dotnet.microsoft.com/en-us/download/dotnet/6.0)
-2. 프로젝트 클론
-   ```
-   git clone https://github.com/aajuy/GomokuOnlineServer.git
-   cd GomokuOnlineServer/<PROJECT-NAME>
-   ```
-3. appsettings.json 수정
-4. 프로젝트 빌드 및 실행
-   ```
-   dotnet publish -c Release
-   dotnet bin/Release/net6.0/<PROJECT-NAME>.dll --urls="http://0.0.0.0:80"
-   ```
+- 서버: C#, .NET, ASP .NET Core, Entity Framework Core
+- 인프라: AWS EC2, RDS, MemoryDB for Redis
+- 패킷: Protocol Buffers
 
 ## 시스템 구성도
 ![Cloud_Architecture](https://github.com/aajuy/GomokuOnlineServer/assets/88243441/4a6111ec-d6e3-45ac-ac15-7803e57cf518)
